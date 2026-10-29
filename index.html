@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEON ARCADE</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#090d1d;color:#f4f7ff;font-family:Arial,sans-serif}
+header{text-align:center;padding:24px;background:#121a31;border-bottom:2px solid #8b5cf6}
+h1{font-size:36px;margin:0}h1 span{color:#38bdf8}
+main{max-width:1000px;margin:auto;padding:18px}
+.panel,.game{background:#121a31;border:1px solid #34436b;border-radius:14px;padding:16px;margin-bottom:14px}
+.stats{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:14px}
+.stats strong{color:#facc15}
+#catalog{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.game{margin:0;display:flex;flex-direction:column;gap:10px}
+.game h3{margin:0}.game p{color:#b6c2df;line-height:1.5;flex:1}
+button{border:0;border-radius:9px;padding:12px;background:linear-gradient(110deg,#9333ea,#2563eb);color:white;font-weight:bold;cursor:pointer}
+button:disabled{opacity:.5}
+#play{display:none;text-align:center}
+#board{display:block;width:100%;max-width:600px;margin:15px auto;background:#070b17;border-radius:10px;touch-action:manipulation}
+#message{color:#38bdf8;min-height:28px}
+.controls{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+small{color:#b6c2df}
+</style>
+</head>
+<body>
+<header>
+<h1>NEON <span>ARCADE</span></h1>
+<p>Tu universo de minijuegos</p>
+<div class="stats">
+<div>🪙 Monedas: <strong id="coins">500</strong></div>
+<div>🎮 Juegos: <strong>8</strong></div>
+<div>🔓 Premium: <strong id="owned">0</strong></div>
+</div>
+</header>
+<main>
+<section class="panel">
+<h2>🎁 Recompensas</h2>
+<button id="daily">Recompensa diaria +100</button>
+<button id="reward">Simular vídeo +25</button>
+<p><small>La recompensa de vídeo es una demostración. Para anuncios reales necesitarás integrar una plataforma publicitaria.</small></p>
+</section>
+<section id="catalogSection">
+<h2>Elige tu juego</h2>
+<div id="catalog"></div>
+</section>
+<section id="play" class="panel">
+<h2 id="title"></h2>
+<p id="instructions"></p>
+<canvas id="board" width="600" height="340"></canvas>
+<div id="message"></div>
+<div id="controls" class="controls"></div>
+<p><button id="back">← Volver al catálogo</button></p>
+</section>
+</main>
+<script>
+const games=[
+{id:1,n:"Lluvia de meteoritos",e:"🚀",p:0,d:"Esquiva los meteoritos y sobrevive.",t:"Mueve la nave a izquierda y derecha. Sobrevive 20 segundos."},
+{id:2,n:"Cazador de estrellas",e:"⭐",p:0,d:"Atrapa estrellas antes de que desaparezcan.",t:"Pulsa el objetivo tantas veces como puedas en 15 segundos."},
+{id:3,n:"Memoria cósmica",e:"🧠",p:0,d:"Encuentra parejas de símbolos.",t:"Descubre las ocho parejas con el menor número de intentos."},
+{id:4,n:"Jardín de píxeles",e:"🌱",p:0,d:"Cultiva tu propio jardín.",t:"Pulsa las parcelas para plantar, regar y cosechar ocho plantas."},
+{id:5,n:"Duelo de reflejos",e:"⚡",p:0,d:"Pon a prueba tus reflejos.",t:"Espera a la señal verde y pulsa lo más rápido posible."},
+{id:6,n:"Explorador espacial",e:"🪐",p:100,d:"Recoge energía evitando zonas peligrosas.",t:"Muévete con las flechas y recoge cinco orbes azules."},
+{id:7,n:"La cámara cifrada",e:"🔐",p:150,d:"Descifra el código secreto.",t:"Adivina una combinación de tres cifras distintas."},
+{id:8,n:"Carrera de mareas",e:"🌊",p:200,d:"Corre entre obstáculos y recoge perlas.",t:"Cambia de carril y recoge tres perlas."}
+];
+let coins=Number(localStorage.getItem("na_coins")??500);
+let unlocked=new Set(JSON.parse(localStorage.getItem("na_owned")||"[]"));
+let daily=localStorage.getItem("na_daily")===new Date().toDateString();
+let stop=()=>{},gameTimer=null;
+const $=id=>document.getElementById(id);
+function save(){
+ localStorage.setItem("na_coins",coins);
+ localStorage.setItem("na_owned",JSON.stringify([...unlocked]));
+ $("coins").textContent=coins;
+ $("owned").textContent=unlocked.size;
+ $("daily").disabled=daily;
+ $("daily").textContent=daily?"Recompensa diaria reclamada":"Recompensa diaria +100";
+}
+function render(){
+ $("catalog").innerHTML=games.map(g=>{
+ let open=!g.p||unlocked.has(g.id);
+ return `<article class="game"><div style="font-size:32px">${g.e}</div>
+ <h3>${g.n}</h3><p>${g.d}</p>
+ <small>${g.p?"🔒 "+g.p+" monedas":"✓ Gratis"}</small>
+ <button data-id="${g.id}">${open?"Jugar":"Desbloquear"}</button></article>`;
+ }).join("");
+}
+$("catalog").addEventListener("click",e=>{
+ const b=e.target.closest("[data-id]");if(b)launch(+b.dataset.id);
+});
+function launch(id){
+ const g=games.find(x=>x.id===id);
+ if(g.p&&!unlocked.has(id)){
+  if(coins<g.p){alert("No tienes suficientes monedas.");return}
+  if(!confirm("¿Desbloquear "+g.n+" por "+g.p+" monedas?"))return;
+  coins-=g.p;unlocked.add(id);save();render();
+ }
+ stop();if(gameTimer)clearInterval(gameTimer);gameTimer=null;
+ $("catalogSection").style.display="none";$("play").style.display="block";
+ $("title").textContent=g.e+" "+g.n;$("instructions").textContent=g.t;
+ $("message").textContent="¡Prepárate!";$("controls").innerHTML="";
+ const c=$("board"),x=c.getContext("2d");
+ function button(text,fn){let b=document.createElement("button");b.textContent=text;b.onclick=fn;$("controls").append(b)}
+ function finish(text){if(gameTimer)clearInterval(gameTimer);gameTimer=null;$("message").textContent=text}
+ function clear(){x.clearRect(0,0,c.width,c.height)}
+ if(id===1||id===6){
+  let player={x:280,y:280},objects=[],score=0,frames=0,ended=false,keys={};
+  const duration=id===1?20:0;
+  function spawn(){objects.push({x:20+Math.random()*560,y:-15,bad:id===6&&Math.random()<.4})}
+  function draw(){
+   clear();x.fillStyle="#142343";x.fillRect(0,0,600,340);
+   x.fillStyle="#38bdf8";x.beginPath();x.moveTo(player.x,player.y-18);x.lineTo(player.x-16,player.y+15);x.lineTo(player.x+16,player.y+15);x.fill();
+   objects.forEach(o=>{x.fillStyle=o.bad?"#fb7185":"#facc15";x.beginPath();x.arc(o.x,o.y,10,0,7);x.fill()});
+   x.fillStyle="white";x.fillText(id===1?"Tiempo: "+Math.floor(frames/25)+" s":"Orbes: "+score+"/5",12,22);
+  }
+  function step(){
+   if(ended)return;frames++;
+   if(frames%22===0)spawn();
+   if(keys.l)player.x-=5;if(keys.r)player.x+=5;
+   player.x=Math.max(18,Math.min(582,player.x));
+   objects.forEach(o=>o.y+=3);
+   objects=objects.filter(o=>{
+    if(Math.hypot(o.x-player.x,o.y-player.y)<22){
+     if(id===1){ended=true;finish("¡Impacto! Pulsa reiniciar para intentarlo otra vez.");return false}
+     if(o.bad){ended=true;finish("Zona peligrosa. Reinicia para probar otra vez.");return false}
+     score++;if(score>=5){ended=true;finish("¡Exploración completada!");return false}
+     return false;
+    }return o.y<360;
+   });
+   if(id===1&&frames>=duration*25){ended=true;finish("¡Has sobrevivido!");coins+=10;save()}
+   draw();
+  }
+  const keydown=e=>{if(e.key==="ArrowLeft"||e.key==="a")keys.l=true;if(e.key==="ArrowRight"||e.key==="d")keys.r=true};
+  const keyup=e=>{if(e.key==="ArrowLeft"||e.key==="a")keys.l=false;if(e.key==="ArrowRight"||e.key==="d")keys.r=false};
+  window.addEventListener("keydown",keydown);window.addEventListener("keyup",keyup);
+  button("⬅",()=>player.x=Math.max(18,player.x-25));button("Reiniciar",()=>launch(id));button("➡",()=>player.x=Math.min(582,player.x+25));
+  stop=()=>{window.removeEventListener("keydown",keydown);window.removeEventListener("keyup",keyup);if(gameTimer)clearInterval(gameTimer)};
+  gameTimer=setInterval(step,40);draw();
+ }else if(id===2){
+  let score=0,left=15;
+  x.fillStyle="#111a32";x.fillRect(0,0,600,340);
+  x.fillStyle="#facc15";x.font="70px Arial";x.fillText("⭐",255,175);
+  button("¡Atrapar estrella!",()=>{if(left>0){score++;$("message").textContent="Puntos: "+score}});
+  gameTimer=setInterval(()=>{left--;$("message").textContent=`Tiempo: ${left}s · Puntos: ${score}`;if(left<=0){finish("¡Ronda terminada! Puntos: "+score);if(score>=10){coins+=10;save()}}},1000);
+  button("Reiniciar",()=>launch(id));
+ }else if(id===3){
+  const symbols=["🌙","🍓","🦋","🎸","🐙","🍀","🔥","💎"];
+  let deck=[...symbols,...symbols].sort(()=>Math.random()-.5),open=[],found=new Set(),tries=0,lock=false;
+  function drawCards(){
+   $("controls").innerHTML="";
+   deck.forEach((s,i)=>{let b=document.createElement("button");b.style.width="65px";b.style.height="55px";b.style.margin="4px";b.textContent=found.has(i)||open.includes(i)?s:"❔";b.onclick=()=>{
+    if(lock||found.has(i)||open.includes(i))return;open.push(i);
+    if(open.length===2){tries++;lock=true;if(deck[open[0]]===deck[open[1]]){found.add(open[0]);found.add(open[1]);open=[];lock=false;drawCards();if(found.size===16)finish("¡Completado en "+tries+" intentos!")}
+    else setTimeout(()=>{open=[];lock=false;drawCards()},700)}
+    drawCards();
+   };$("controls").append(b)});
+   $("message").textContent=`Parejas: ${found.size/2}/8 · Intentos: ${tries}`;
+  }
+  drawCards();button("Nueva partida",()=>launch(id));
+ }else if(id===4){
+  let cells=Array(16).fill(0),harvest=0;
+  function drawGarden(){
+   $("controls").innerHTML="";
+   cells.forEach((v,i)=>{let b=document.createElement("button");b.style.width="65px";b.style.height="55px";b.style.margin="4px";b.textContent=["🟫","🌰","🌿","🌻"][v];b.onclick=()=>{if(harvest>=8)return;cells[i]=(v+1)%4;if(v===2)harvest++;drawGarden();if(harvest>=8)finish("¡Jardín completado!")};$("controls").append(b)});
+   $("message").textContent="Cosechas: "+harvest+"/8";
+  }drawGarden();button("Reiniciar",()=>launch(id));
+ }else if(id===5){
+  x.fillStyle="#5b1e32";x.fillRect(120,70,360,180);x.fillStyle="white";x.font="25px Arial";x.fillText("ESPERA A LA SEÑAL",155,160);
+  let phase="wait",delay=setTimeout(()=>{phase="go";x.fillStyle="#15803d";x.fillRect(120,70,360,180);x.fillStyle="white";x.fillText("¡PULSA AHORA!",185,160);window.reflexStart=performance.now()},1500+Math.random()*3000);
+  button("Pulsar",()=>{if(phase==="wait"){clearTimeout(delay);finish("¡Demasiado pronto! Reinicia.");}else if(phase==="go"){finish("Tiempo de reacción: "+Math.round(performance.now()-window.reflexStart)+" ms")}});
+  button("Reiniciar",()=>launch(id));stop=()=>clearTimeout(delay);
+ }else if(id===7){
+  const secret=String(Math.floor(100+Math.random()*900));let attempts=0;
+  const input=document.createElement("input");input.placeholder="Tres cifras";input.maxLength=3;input.inputMode="numeric";input.style.padding="12px";input.style.width="120px";$("controls").append(input);
+  button("Probar",()=>{if(!/^\d{3}$/.test(input.value)){sayCipher("Introduce tres cifras.");return}attempts++;if(input.value===secret){finish("¡Código descifrado en "+attempts+" intentos!");coins+=20;save()}else{let exact=[...input.value].filter((v,i)=>v===secret[i]).length;$("message").textContent=`Cifras correctas en posición: ${exact}. Intenta otra vez.`}});
+  function sayCipher(t){$("message").textContent=t}button("Nuevo código",()=>launch(id));
+ }else if(id===8){
+  let lane=1,pearls=0,obstacles=[],frames=0,ended=false;
+  function drawRace(){clear();x.fillStyle="#0e7490";x.fillRect(80,0,440,340);x.strokeStyle="#a5f3fc";for(let i=1;i<3;i++){x.beginPath();x.moveTo(80+i*440/3,0);x.lineTo(80+i*440/3,340);x.stroke()}x.fillStyle="#facc15";x.fillRect(80+lane*440/3+35,270,40,35);obstacles.forEach(o=>{x.fillStyle=o.pearl?"#38bdf8":"#fb7185";x.beginPath();x.arc(80+o.lane*440/3+55,o.y,12,0,7);x.fill()});x.fillStyle="white";x.fillText("Perlas: "+pearls+"/3",12,22)}
+  function stepRace(){if(ended)return;frames++;if(frames%35===0)obstacles.push({lane:Math.floor(Math.random()*3),y:-10,pearl:Math.random()<.35});obstacles.forEach(o=>o.y+=4);obstacles=obstacles.filter(o=>{if(o.y>255&&o.y<320&&o.lane===lane){if(o.pearl){pearls++;if(pearls>=3){ended=true;finish("¡Carrera completada!");coins+=10;save()}return false}ended=true;finish("¡Choque! Reinicia para intentarlo otra vez.");return false}return o.y<360});drawRace()}
+  button("⬅ Carril",()=>lane=Math.max(0,lane-1));button("Carril ➡",()=>lane=Math.min(2,lane+1));button("Reiniciar",()=>launch(id));gameTimer=setInterval(stepRace,40);drawRace();
+ }
+}
+function sayCipher(t){$("message").textContent=t}
+$("back").onclick=()=>{stop();if(gameTimer)clearInterval(gameTimer);gameTimer=null;$("play").style.display="none";$("catalogSection").style.display="block";render()};
+$("daily").onclick=()=>{if(daily)return;daily=true;localStorage.setItem("na_daily",new Date().toDateString());coins+=100;save()};
+$("reward").onclick=()=>{if(confirm("Esto es una simulación, no un anuncio real. ¿Añadir 25 monedas de prueba?")){coins+=25;save()}};
+save();render();
+</script>
+</body>
+</html>
