@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090817">
+<title>NEON ARCADE 3.0</title>
+<style>
+:root{--bg:#090817;--panel:#15132a;--purple:#a855f7;--blue:#38bdf8;--text:#f5f3ff;--muted:#aaa6c8}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at top,#21133e,#090817 60%);color:var(--text);font-family:system-ui,Arial,sans-serif;min-height:100vh}
+button,input{font:inherit}
+button{cursor:pointer;border:1px solid #48406c;background:#292344;color:white;border-radius:11px;padding:10px 13px}
+button:hover{border-color:var(--blue)}
+button:disabled{opacity:.35;cursor:default}
+header{position:sticky;top:0;z-index:5;background:#0c0a1bee;border-bottom:1px solid #30274c;padding:13px 4%;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.logo{font-size:22px;font-weight:950;letter-spacing:2px}.logo span{color:var(--blue)}
+.balance{background:#211a38;border:1px solid #5b3983;border-radius:12px;padding:9px 13px;color:#fde68a;font-weight:800}
+main{max-width:1250px;margin:auto;padding:20px 16px 50px}
+.hero{text-align:center;padding:24px 8px}
+.hero h1{font-size:clamp(30px,6vw,54px);margin:0;line-height:1.15}
+.hero h1 span{color:var(--blue);text-shadow:0 0 24px #38bdf855}
+.hero p{color:var(--muted);max-width:650px;margin:13px auto 20px}
+.actions,.filters,.rowbtn{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.primary{background:linear-gradient(120deg,#7c3aed,#2563eb);border:0;font-weight:750}
+.reward{background:#173c38;border-color:#26776c}
+.sectionhead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:24px 0 14px}
+.sectionhead h2{margin:0}
+#search{background:#15132a;color:white;border:1px solid #494064;border-radius:11px;padding:11px;width:260px;max-width:100%}
+.filters{justify-content:flex-start;margin-bottom:15px}
+.filters .active{background:#6337a6;border-color:#c084fc}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:13px}
+.card{background:linear-gradient(145deg,#1c1834,#100e20);border:1px solid #342b51;border-radius:16px;padding:15px;min-height:205px;display:flex;flex-direction:column;gap:9px}
+.card .emoji{font-size:29px}
+.card h3{margin:0;font-size:16px}
+.card p{margin:0;color:var(--muted);font-size:12px;line-height:1.5;flex:1}
+.meta{display:flex;justify-content:space-between;gap:5px;font-size:11px;color:#c4b5fd}
+.card button{width:100%}
+.lock{color:#fbbf24}
+.notice{border:1px solid #383052;background:#141127;border-radius:13px;padding:13px;color:var(--muted);font-size:12px;line-height:1.6;margin-top:22px}
+#gameScreen{display:none}
+.game-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.game-top h2{margin:0;font-size:22px}
+.game-panel{max-width:850px;margin:auto;background:linear-gradient(145deg,#1a1630,#100e20);border:1px solid #443563;border-radius:20px;padding:clamp(13px,3vw,25px);box-shadow:0 15px 50px #0004}
+#gameDesc{color:var(--muted);line-height:1.5}
+#arena{min-height:270px}
+#message{min-height:28px;margin:12px 0;color:#c4b5fd;font-weight:650;line-height:1.5}
+.center{text-align:center}
+.big{font-size:36px;font-weight:900;margin:10px 0}
+.small{font-size:12px;color:var(--muted)}
+.field{width:100%;max-width:330px;display:block;margin:12px auto;background:#0c0a1b;color:white;border:1px solid #554674;border-radius:10px;padding:12px}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;max-width:440px;margin:14px auto}
+.tiles button{min-height:48px;font-size:19px;padding:6px}
+.tiles.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.bar{height:17px;background:#0b0918;border:1px solid #45385e;border-radius:20px;overflow:hidden;margin:12px 0}
+.bar div{height:100%;background:linear-gradient(90deg,#7c3aed,#38bdf8)}
+#world{display:block;width:100%;height:auto;aspect-ratio:16/10;background:#070817;border:1px solid #40315e;border-radius:14px;touch-action:manipulation}
+.controls{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+.controls button{min-width:65px}
+footer{text-align:center;color:#77728f;padding:25px;font-size:12px}
+@media(max-width:520px){header{padding:11px}.logo{font-size:18px}main{padding:12px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.card{padding:11px;min-height:200px}.card h3{font-size:14px}.card p{font-size:11px}.card button{font-size:12px;padding:9px 4px}.game-top h2{font-size:17px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">NEON <span>ARCADE</span></div>
+  <div class="balance">🪙 <span id="coins">100</span> monedas</div>
+</header>
+<main>
+<section id="home">
+  <div class="hero">
+    <h1>JUEGA EN OTRA <span>DIMENSIÓN</span></h1>
+    <p>60 desafíos arcade: lógica, habilidad, deportes, conducción, exploración y minijuegos de perspectiva 3D.</p>
+    <div class="actions">
+      <button class="primary" onclick="showCatalog()">🎮 Explorar juegos</button>
+      <button class="reward" onclick="dailyReward()">🎁 Recompensa diaria</button>
+      <button onclick="demoReward()">▶ Recompensa de prueba</button>
+    </div>
+    <p class="small">Las recompensas de vídeo son demostraciones. No se reproducen anuncios reales.</p>
+  </div>
+  <div class="sectionhead">
+    <h2>🚀 Catálogo arcade</h2>
+    <input id="search" placeholder="Buscar juego..." oninput="renderCatalog()">
+  </div>
+  <div class="filters">
+    <button class="active" onclick="setFilter('all',this)">Todos</button>
+    <button onclick="setFilter('free',this)">Gratis</button>
+    <button onclick="setFilter('premium',this)">Prémium</button>
+    <button onclick="setFilter('unlocked',this)">Desbloqueados</button>
+    <button onclick="setFilter('3d',this)">🌌 Zona 3D</button>
+  </div>
+  <div id="catalog" class="grid"></div>
+  <div class="notice"><strong>Información:</strong> tu saldo, récords y desbloqueos se guardan en este navegador. Los juegos 3D utilizan gráficos de perspectiva dibujados en Canvas para funcionar sin motores externos. Las compras y los anuncios reales todavía no están conectados.</div>
+</section>
+
+<section id="gameScreen">
+  <div class="game-top">
+    <button onclick="exitGame()">← Catálogo</button>
+    <h2 id="gameTitle">Juego</h2>
+    <span class="balance">🪙 <span id="gameCoins">100</span></span>
+  </div>
+  <div class="game-panel">
+    <p id="gameDesc"></p>
+    <div id="arena"></div>
+    <div id="message" role="status" aria-live="polite"></div>
+    <div class="rowbtn" id="gameActions"></div>
+  </div>
+</section>
+</main>
+<footer>NEON ARCADE · Versión 3.0 · HTML, CSS y JavaScript</footer>
+
+<script>
+"use strict";
+const classic=[
+["Cazador de estrellas","🌟","Pulsa diez estrellas que cambian de posición.","target",0],
+["Duelo de reflejos","⚡","Reacciona únicamente cuando aparezca la señal verde.","reaction",0],
+["Memoria cósmica","🧠","Encuentra las parejas de símbolos ocultos.","pairs",0],
+["Reto matemático","➗","Resuelve cinco operaciones aritméticas.","math",0],
+["Esquiva meteoritos","☄️","Elige carriles seguros para evitar impactos.","dodge",0],
+["Atrapa-neones","🟢","Pulsa durante el breve instante en que se ilumina el objetivo.","catch",0],
+["Código secreto","🔐","Descifra un código de tres cifras con pistas.","code",0],
+["Teclea a toda velocidad","⌨️","Escribe cinco palabras correctamente.","typing",0],
+["Maestro del color","🎨","Identifica el color real del texto.","color",0],
+["Mayor o menor","🔢","Predice si el siguiente número será mayor o menor.","higher",0],
+["Lluvia de clics","🖱️","Consigue el máximo de clics en diez segundos.","clicks",0],
+["Laberinto digital","🧩","Encuentra la salida del laberinto.","maze",0],
+["Caza-bichos","🐛","Atrapa diez objetivos en una cuadrícula.","whack",0],
+["Eco de memoria","🎼","Memoriza una secuencia musical y repítela.","sequence",0],
+["Campo minado","💣","Abre las casillas seguras evitando las minas.","mines",0],
+["Orden numérico","🔀","Pulsa los números en orden ascendente.","order",0],
+["Pulso de energía","🔋","Detén la barra en la zona exacta.","charge",0],
+["Trivia exprés","❓","Contesta preguntas de cultura general.","quiz",100],
+["Supervivencia neón","🛡️","Sobrevive a cinco ataques eligiendo defensas.","survive",150],
+["Desafío infinito","♾️","Completa una cadena de diez operaciones.","infinite",200],
+["Tres en raya","⭕","Juega al tres en raya contra el ordenador.","ttt",0],
+["Piedra, papel o tijera","✊","Gana el duelo al mejor de cinco rondas.","rps",0],
+["Ahorcado galáctico","🔤","Descubre la palabra antes de agotar intentos.","hangman",0],
+["Adivina el número","🎯","Encuentra el número secreto entre uno y cincuenta.","guess",0],
+["Mosaico oculto","🟪","Memoriza y reproduce un patrón de casillas.","pattern",0],
+["Palabra revuelta","🌀","Ordena las letras para descubrir la palabra.","scramble",0],
+["Parada perfecta","⏱️","Detén el cronómetro exactamente a los cinco segundos.","precision",0],
+["Equilibrio digital","⚖️","Ajusta el indicador y mantenlo cerca del centro.","balance",0],
+["Serpiente neón","🐍","Guía la serpiente para recoger cinco energías.","snake",0],
+["Defensa orbital","🪐","Protege los cuatro sectores de una estación espacial.","orbital",0]
+];
+const extra=[
+["Corredor Cyber 3D","🏃","Corre por una pista en profundidad y cambia de carril para esquivar obstáculos.","runner",0],
+["Carrera Neon GT 3D","🏎️","Conduce, esquiva tráfico y mantén el coche dentro de la pista.","racing",40],
+["Vuelo Estelar 3D","🛸","Controla la altura de tu nave y atraviesa anillos de energía.","flight",50],
+["Túnel Infinito 3D","🌀","Gira dentro de un túnel y atraviesa sus aberturas luminosas.","tunnel",60],
+["Baloncesto Holo 3D","🏀","Ajusta la potencia del lanzamiento para encestar.","basketball",70],
+["Fútbol Holo 3D","⚽","Apunta y dispara a una portería con un portero móvil.","soccer",70],
+["Tenis Cyber 3D","🎾","Devuelve la pelota cuando entre en tu zona de golpeo.","tennis",80],
+["Bolos Galácticos 3D","🎳","Calcula dirección y potencia para derribar los bolos.","bowling",80],
+["Plataformas Prisma 3D","🧊","Salta entre plataformas suspendidas sobre el vacío.","platform",90],
+["Laberinto Prisma 3D","🔷","Gira el punto de vista y encuentra la salida del laberinto.","maze3d",90],
+["Minero de Cristales 3D","⛏️","Excava los cristales visibles y evita las rocas oscuras.","mining",100],
+["Defensa de Torres 3D","🏰","Coloca defensas en los puntos estratégicos antes de que lleguen enemigos.","tower",100],
+["Batalla de Drones 3D","🤖","Apunta a los drones rivales y evita sus disparos.","drone",110],
+["Navegación Submarina 3D","🌊","Pilota un submarino entre minas y recoge perlas abisales.","submarine",110],
+["Esquí Cósmico 3D","🎿","Desciende por una montaña esquivando árboles y rocas.","ski",120],
+["Parkour Neon 3D","🤸","Combina salto y deslizamiento para superar obstáculos urbanos.","parkour",120],
+["Tiro al Blanco Holo 3D","🎯","Apunta a dianas móviles que aparecen a distintas profundidades.","shooter",130],
+["Explorador de Ruinas 3D","🏛️","Busca reliquias escondidas en una cámara antigua.","explore",130],
+["Pesca Abisal 3D","🎣","Suelta el anzuelo y recoge el pez en el momento adecuado.","fishing",140],
+["Golf Orbital 3D","⛳","Elige dirección y fuerza para llegar al hoyo con pocos golpes.","golf",140],
+["Pinball Holográfico 3D","🕹️","Usa las palancas para mantener la bola en juego y sumar puntos.","pinball",150],
+["Boxeo Robot 3D","🥊","Bloquea ataques y lanza golpes en las aperturas del rival.","boxing",150],
+["Karting Cuántico 3D","🏁","Derrapa en las curvas y completa tres vueltas sin salirte.","kart",160],
+["Escalada Vertical 3D","🧗","Elige presas seguras para subir por una pared vertical.","climb",160],
+["Defensa Planetaria 3D","🌍","Rota el escudo para interceptar meteoritos que se acercan al planeta.","planet",170],
+["Puzzle de Cubos 3D","🧊","Gira cubos y alinea las caras con el patrón objetivo.","cube",170],
+["Carrera de Motos 3D","🏍️","Inclina la moto para tomar curvas y esquivar barreras.","moto",180],
+["Portero Holo 3D","🧤","Lee la trayectoria del balón y mueve al portero para detenerlo.","goalie",180],
+["Aventura de Gravedad 3D","🪐","Invierte la gravedad para caminar por suelo y techo.","gravity",190],
+["Supervivencia Arena 3D","⚔️","Muévete en una arena, recoge energía y evita a los perseguidores.","arena",200]
+];
+const games=[...classic,...extra].map((g,i)=>({id:i+1,name:g[0],emoji:g[1],desc:g[2],type:g[3],cost:g[4],is3d:i>=30}));
+const initial={coins:100,unlocked:[],daily:"",best:{}};
+let data;
+try{data={...initial,...JSON.parse(localStorage.getItem("neonArcadeSave")||"{}")};if(!Array.isArray(data.unlocked))data.unlocked=[];if(!data.best||typeof data.best!=="object")data.best={};data.coins=Math.max(0,Number(data.coins)||0)}catch(e){data={...initial,unlocked:[],best:{}}}
+let filter="all",current=null,state={},timers=[],interval=null,ended=false,raf=null;
+const $=id=>document.getElementById(id),rand=n=>Math.floor(Math.random()*n);
+const shuffle=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
+function save(){try{localStorage.setItem("neonArcadeSave",JSON.stringify(data))}catch(e){}updateCoins()}
+function updateCoins(){$("coins").textContent=data.coins;$("gameCoins").textContent=data.coins}
+function addCoins(n){data.coins+=n;save()}
+function schedule(fn,ms){let t=setTimeout(fn,ms);timers.push(t);return t}
+function clearTimers(){timers.forEach(clearTimeout);timers=[];if(interval){clearInterval(interval);interval=null}if(raf){cancelAnimationFrame(raf);raf=null}}
+function setMessage(s){$("message").textContent=s}
+function setArena(s){$("arena").innerHTML=s}
+function setActions(s){$("gameActions").innerHTML=s}
+function btn(label,act,extra=""){return `<button data-act="${act}" ${extra}>${label}</button>`}
+function showCatalog(){$("home").style.display="block";$("gameScreen").style.display="none";clearTimers();current=null;renderCatalog()}
+function exitGame(){clearTimers();showCatalog()}
+function setFilter(f,b){filter=f;document.querySelectorAll(".filters button").forEach(x=>x.classList.toggle("active",x===b));renderCatalog()}
+function renderCatalog(){
+ const q=$("search").value.trim().toLowerCase();
+ const list=games.filter(g=>{let unlocked=g.cost===0||data.unlocked.includes(g.id);return(filter==="all"||(filter==="free"&&g.cost===0)||(filter==="premium"&&g.cost>0)||(filter==="unlocked"&&unlocked)||(filter==="3d"&&g.is3d))&&(g.name+" "+g.desc).toLowerCase().includes(q)});
+ $("catalog").innerHTML=list.map(g=>{let unlocked=g.cost===0||data.unlocked.includes(g.id);return `<article class="card"><div class="emoji">${g.emoji}${g.is3d?' <span style="font-size:11px;color:#38bdf8">3D</span>':''}</div><h3>${g.name}</h3><p>${g.desc}</p><div class="meta"><span>${g.cost?(unlocked?"🔓 Desbloqueado":`🔒 ${g.cost} monedas`):"🟢 Gratis"}</span><span>Récord: ${data.best[g.id]||0}</span></div><button class="${unlocked?"primary":""}" data-play="${g.id}">${unlocked?"Jugar":`Desbloquear · 🪙 ${g.cost}`}</button></article>`}).join("")||"<p>No se han encontrado juegos.</p>"
+}
+function dailyReward(){let day=new Date().toISOString().slice(0,10);if(data.daily===day){alert("Ya has recogido tu recompensa diaria.");return}data.daily=day;addCoins(100);alert("¡Has recibido 100 monedas!")}
+function demoReward(){alert("Demostración: no se ha reproducido ningún anuncio real ni se han concedido monedas. Para monetizar, tendrás que integrar anuncios recompensados y verificar la recompensa con su proveedor.")}
+function startGame(id){
+ const g=games.find(x=>x.id===id);if(!g)return;
+ if(g.cost>0&&!data.unlocked.includes(id)){if(data.coins<g.cost){alert("No tienes suficientes monedas. Recoge la recompensa diaria.");return}if(!confirm(`¿Desbloquear ${g.name} por ${g.cost} monedas?`))return;data.coins-=g.cost;data.unlocked.push(id);save()}
+ clearTimers();current=g;state={};ended=false;
+ $("home").style.display="none";$("gameScreen").style.display="block";$("gameTitle").textContent=g.emoji+" "+g.name;$("gameDesc").textContent=g.desc;setMessage("");setActions("");updateCoins();
+ if(g.is3d)start3D(g.type);else renderClassic(g.type);
+}
+function finish(msg,win=true,score=0){
+ if(ended)return;ended=true;clearTimers();
+ if(win){addCoins(10);setMessage(msg+" · +10 monedas")}else setMessage(msg);
+ if(score>Number(data.best[current.id]||0)){data.best[current.id]=score;save()}
+ setActions(btn("🔄 Jugar otra vez","restart")+btn("🎮 Catálogo","catalog"));
+}
+$("catalog").addEventListener("click",e=>{let b=e.target.closest("[data-play]");if(b)startGame(Number(b.dataset.play))});
+$("gameActions").addEventListener("click",e=>{let b=e.target.closest("[data-act]");if(!b)return;if(b.dataset.act==="restart")startGame(current.id);if(b.dataset.act==="catalog")exitGame()});
+$("arena").addEventListener("click",e=>{let b=e.target.closest("[data-act]");if(b&&current&&!ended)classicAction(b.dataset.act)});
+$("arena").addEventListener("submit",e=>{if(e.target.tagName==="FORM"){e.preventDefault();if(current&&!ended)classicAction("submit")}});
+function renderClassic(t){
+ switch(t){
+ case"target":state.n=0;targetNext();break;
+ case"reaction":setArena('<div class="center"><div class="big">⚡</div><p>Espera la señal verde.</p><button class="big" data-act="react" id="react">ESPERA...</button></div>');state.ready=false;schedule(()=>{if(ended)return;state.ready=true;state.green=Date.now();$("react").textContent="¡AHORA!";$("react").style.background="#166534"},1000+rand(2500));break;
+ case"pairs":state.cards=shuffle(["🌙","🌙","⭐","⭐","🚀","🚀","🪐","🪐"]);state.open=[];state.matched=[];setArena('<div class="center">Encuentra cuatro parejas.</div><div class="tiles" id="pairGrid"></div>');pairsDraw();break;
+ case"math":case"infinite":state.round=0;state.limit=t==="infinite"?10:5;mathNext();break;
+ case"dodge":state.round=0;setArena('<div class="center"><div class="big">☄️</div><p id="dodgeText">Elige el carril que no tenga meteorito.</p><div class="rowbtn">'+btn("⬅️ Izquierda","lane-0")+btn("⬆️ Centro","lane-1")+btn("➡️ Derecha","lane-2")+'</div></div>');break;
+ case"catch":state.n=0;setArena('<div class="center"><div class="big" id="catchSymbol">🌑</div><p>¡Pulsa cuando aparezca el círculo verde!</p><button class="big" data-act="catch">ATRAPAR</button></div>');catchPulse();break;
+ case"code":state.secret=String(100+rand(900));state.tries=0;setArena('<div class="center"><div class="big">🔐 ? ? ?</div><form><input id="codeInput" class="field" maxlength="3" inputmode="numeric" placeholder="Código de tres cifras" required><button class="primary">Probar código</button></form><p id="hint"></p></div>');break;
+ case"typing":state.words=shuffle(["galaxia","cometa","energia","nebulosa","pixel","universo","cohete","estrella"]);state.i=0;typingDraw();break;
+ case"color":state.round=0;colorNext();break;
+ case"higher":state.num=1+rand(10);state.round=0;higherDraw();break;
+ case"clicks":state.n=0;state.left=10;setArena('<div class="center"><div class="big" id="clickScore">0</div><button class="big" data-act="click">¡CLIC!</button><p>Tiempo: <span id="clickTime">10</span> s</p></div>');interval=setInterval(()=>{state.left--;if($("clickTime"))$("clickTime").textContent=state.left;if(state.left<=0)finish("Clics conseguidos: "+state.n,true,state.n)},1000);break;
+ case"maze":state.pos=0;setArena('<div class="center">Llega a 🏁 evitando las paredes.</div><div class="tiles" id="mazeGrid"></div><div class="rowbtn">'+btn("⬆️","move-up")+btn("⬅️","move-left")+btn("⬇️","move-down")+btn("➡️","move-right")+'</div>');mazeDraw();break;
+ case"whack":state.n=0;whackNext();break;
+ case"sequence":state.seq=Array.from({length:5},()=>["🔴","🔵","🟢","🟡"][rand(4)]);state.i=0;setArena('<div class="center"><p>Memoriza la secuencia.</p><div class="big" id="seqDisplay"></div><div id="seqButtons" class="rowbtn"></div></div>');$("seqDisplay").textContent=state.seq.join(" ");schedule(()=>{if(ended)return;$("seqDisplay").textContent="❔ ❔ ❔ ❔ ❔";$("seqButtons").innerHTML=["🔴","🔵","🟢","🟡"].map(c=>btn(c,"seq-"+c)).join("")},2000);break;
+ case"mines":state.mines=shuffle(Array.from({length:16},(_,i)=>i)).slice(0,3);state.open=[];minesDraw();break;
+ case"order":state.nums=shuffle([1,2,3,4,5]);state.next=1;orderDraw();break;
+ case"charge":state.charge=0;state.dir=1;setArena('<div class="center"><p>Detén la barra entre 45 y 55.</p><div class="big" id="chargeValue">0</div><div class="bar"><div id="chargeBar"></div></div><button class="big" data-act="charge-stop">DETENER</button></div>');interval=setInterval(()=>{state.charge+=state.dir*3;if(state.charge>=100){state.charge=100;state.dir=-1}if(state.charge<=0){state.charge=0;state.dir=1}if($("chargeValue"))$("chargeValue").textContent=state.charge;if($("chargeBar"))$("chargeBar").style.width=state.charge+"%"},60);break;
+ case"quiz":state.qs=shuffle([["¿Cuál es el planeta rojo?","Marte",["Marte","Venus","Saturno","Mercurio"]],["¿Cuántos lados tiene un hexágono?","6",["5","6","7","8"]],["¿Cuál es el océano más grande?","Pacífico",["Índico","Ártico","Pacífico","Atlántico"]],["¿Cuánto es 9 × 7?","63",["56","63","72","49"]],["¿Qué estrella ilumina la Tierra?","El Sol",["Sirio","El Sol","Vega","Polaris"]],["¿Cuántos minutos hay en una hora?","60",["30","45","60","90"]]]).slice(0,5);state.round=0;state.score=0;quizNext();break;
+ case"survive":state.round=0;state.hp=3;setArena('<div class="center"><div class="big">❤️ ❤️ ❤️</div><p>Elige una defensa.</p><div class="rowbtn">'+btn("🛡️ Defender","guard")+btn("💨 Esquivar","dodge")+'</div><p id="surviveRound">Ronda 1/5</p></div>');break;
+ case"ttt":state.board=Array(9).fill("");tttDraw();break;
+ case"rps":state.round=0;state.score=0;setArena('<div class="center"><div class="big" id="rpsResult">✊ ✋ ✌️</div><div class="rowbtn">'+btn("✊ Piedra","rps-rock")+btn("✋ Papel","rps-paper")+btn("✌️ Tijera","rps-scissors")+'</div><p id="rpsScore">0 victorias</p></div>');break;
+ case"hangman":state.word=["PLANETA","GALAXIA","COMETA","NEBULOSA","COHETE"][rand(5)];state.guessed=[];state.errors=0;setArena('<div class="center"><div class="big" id="hangWord"></div><p id="hangErrors"></p><div class="tiles three" id="hangLetters"></div></div>');hangDraw();break;
+ case"guess":state.secret=1+rand(50);state.tries=0;setArena('<div class="center"><p>Número entre 1 y 50.</p><form><input class="field" id="guessInput" type="number" min="1" max="50" required><button class="primary">Adivinar</button></form><p id="guessHint"></p></div>');break;
+ case"pattern":state.pattern=shuffle(Array.from({length:16},(_,i)=>i)).slice(0,5);state.selected=[];setArena('<div class="center"><p>Memoriza las casillas iluminadas.</p><div class="tiles" id="patternGrid"></div></div>');patternDraw(true);schedule(()=>{if(!ended)patternDraw(false)},1800);break;
+ case"scramble":state.word=["PLANETA","COHETE","GALAXIA","COMETA","ESTRELLA"][rand(5)];state.scramble=shuffle(state.word.split("")).join("");setArena(`<div class="center"><div class="big">${state.scramble}</div><form><input class="field" id="scrambleInput" required placeholder="Tu respuesta"><button class="primary">Comprobar</button></form></div>`);break;
+ case"precision":state.running=false;state.value=0;setArena('<div class="center"><div class="big" id="precisionTime">0.00 s</div><p>Para el cronómetro en 5.00 segundos.</p><button class="big" data-act="precision-start">INICIAR</button></div>');break;
+ case"balance":setArena('<div class="center"><p>Deja el indicador entre 45 y 55.</p><div class="big" id="balanceValue">50</div><input id="balanceSlider" class="field" type="range" min="0" max="100" value="50"><button class="primary" data-act="balance-check">Fijar posición</button></div>');$("balanceSlider").oninput=()=>{$("balanceValue").textContent=$("balanceSlider").value};break;
+ case"snake":state.snake=[5,6,7];state.apple=rand(16);while(state.snake.includes(state.apple))state.apple=rand(16);state.score=0;setArena('<div class="center"><p>Recoge cinco energías con las flechas.</p><div class="tiles" id="snakeGrid"></div><div class="rowbtn">'+btn("⬆️","snake-up")+btn("⬅️","snake-left")+btn("⬇️","snake-down")+btn("➡️","snake-right")+'</div><p id="snakeScore"></p></div>');snakeDraw();break;
+ case"orbital":state.round=0;state.hp=3;orbitalNext();break;
+ }
+}
+function classicAction(a){
+ let t=current.type;
+ if(t==="target"&&a==="target"){state.n++;if(state.n>=10)finish("¡Diez estrellas cazadas!",true,state.n);else targetNext()}
+ if(t==="reaction"&&a==="react"){if(!state.ready)finish("¡Demasiado pronto!",false);else finish("¡Reacción en "+(Date.now()-state.green)+" ms!",true,Math.max(0,5000-(Date.now()-state.green)))}
+ if(t==="pairs"&&a.startsWith("pair-"))pairsPick(+a.slice(5));
+ if((t==="math"||t==="infinite")&&a.startsWith("ans-")){if(+a.slice(4)===state.answer){state.round++;if(state.round>=state.limit)finish("¡Reto completado!",true,state.round);else mathNext()}else finish("Respuesta incorrecta.",false,state.round)}
+ if(t==="dodge"&&a.startsWith("lane-")){if(+a.slice(5)===state.danger){finish("¡Meteorito impactado!",false,state.round)}else{state.round++;if(state.round>=5)finish("¡Cinco rondas superadas!",true,state.round);else{$("dodgeText").textContent="¡A salvo! Elige otra vez. Ronda "+(state.round+1)+"/5";state.danger=rand(3)}}}
+ if(t==="catch"&&a==="catch"){if(state.active){state.n++;if(state.n>=8)finish("¡Has atrapado ocho pulsos!",true,state.n);else{setMessage("Aciertos: "+state.n+"/8");catchPulse()}}else setMessage("Espera a que se ilumine.")}
+ if(t==="code"&&a==="submit"){let n=$("codeInput").value;if(!/^\d{3}$/.test(n))return;if(n===state.secret)finish("¡Código descifrado!",true,Math.max(0,7-state.tries));else{state.tries++;let c=[0,1,2].filter(i=>n[i]===state.secret[i]).length;$("hint").textContent="Cifras correctas en su posición: "+c+" · Intentos: "+state.tries+"/7";if(state.tries>=7)finish("El código era "+state.secret,false)}}
+ if(t==="typing"&&a==="submit"){if($("typeInput").value.trim().toLowerCase()!==state.words[state.i])finish("Palabra incorrecta.",false,state.i);else if(++state.i>=5)finish("¡Cinco palabras correctas!",true,state.i);else typingDraw()}
+ if(t==="color"&&a.startsWith("color-")){if(a.slice(6)!==state.answer)finish("Color incorrecto.",false,state.round);else if(++state.round>=5)finish("¡Cinco colores identificados!",true,state.round);else colorNext()}
+ if(t==="higher"&&(a==="higher"||a==="lower")){let n=1+rand(10);if(n===state.num){setMessage("Empate: vuelve a elegir.");return}if((a==="higher")!==(n>state.num)){finish("El número era "+n+".",false,state.round);return}state.num=n;if(++state.round>=5)finish("¡Cinco predicciones correctas!",true,state.round);else higherDraw()}
+ if(t==="clicks"&&a==="click"){state.n++;$("clickScore").textContent=state.n}
+ if(t==="maze"&&a.startsWith("move-"))mazeMove(a.slice(5));
+ if(t==="whack"&&a.startsWith("whack-")){if(+a.slice(6)!==state.target){setMessage("¡Fallaste! Prueba otra casilla.");return}if(++state.n>=10)finish("¡Diez objetivos capturados!",true,state.n);else whackNext()}
+ if(t==="sequence"&&a.startsWith("seq-")){if(a.slice(4)!==state.seq[state.i])finish("Secuencia incorrecta.",false,state.i);else if(++state.i>=state.seq.length)finish("¡Secuencia recordada!",true,state.i);else setMessage("Correcto: "+state.i+"/5")}
+ if(t==="mines"&&a.startsWith("mine-")){let n=+a.slice(5);if(state.mines.includes(n)){finish("¡Has encontrado una mina!",false,state.open.length);return}state.open.push(n);minesDraw();if(state.open.length>=13)finish("¡Campo despejado!",true,state.open.length)}
+ if(t==="order"&&a.startsWith("order-")){if(+a.slice(6)!==state.next){finish("Orden incorrecto.",false,state.next-1);return}state.next++;orderDraw();if(state.next>5)finish("¡Orden perfecto!",true,5)}
+ if(t==="charge"&&a==="charge-stop"){let v=state.charge;if(v>=45&&v<=55)finish("¡Pulso perfecto!",true,100-Math.abs(50-v));else finish("La carga estaba en "+v+".",false)}
+ if(t==="quiz"&&a.startsWith("quiz-")){if(state.options[+a.slice(5)]===state.qs[state.round][1])state.score++;if(++state.round>=5){finish("Resultado: "+state.score+"/5",state.score>=3,state.score)}else quizNext()}
+ if(t==="survive"&&(a==="guard"||a==="dodge")){if(a!==(Math.random()<.5?"guard":"dodge"))state.hp--;state.round++;if(state.hp<=0)finish("La nave ha sido alcanzada.",false,state.round);else if(state.round>=5)finish("¡Has sobrevivido!",true,state.round);else $("surviveRound").textContent=`Ronda ${state.round+1}/5 · Vidas: ${state.hp}`}
+ if(t==="ttt"&&a.startsWith("ttt-"))tttPick(+a.slice(4));
+ if(t==="rps"&&a.startsWith("rps-"))rpsPick(a.slice(4));
+ if(t==="hangman"&&a.startsWith("letter-"))hangPick(a.slice(7));
+ if(t==="guess"&&a==="submit"){let n=+$("guessInput").value;if(n===state.secret)finish("¡Correcto! Era "+n,true,Math.max(0,10-state.tries));else{state.tries++;$("guessHint").textContent=n<state.secret?"El número es mayor.":"El número es menor.";if(state.tries>=7)finish("El número era "+state.secret,false)}}
+ if(t==="pattern"&&a.startsWith("pattern-")){let n=+a.slice(8);if(!state.pattern.includes(n)){finish("Casilla incorrecta.",false,state.selected.length);return}state.selected.push(n);patternDraw(false);if(state.selected.length===5)finish("¡Patrón recordado!",true,5)}
+ if(t==="scramble"&&a==="submit"){if($("scrambleInput").value.trim().toUpperCase()===state.word)finish("¡Palabra correcta!",true,state.word.length);else finish("La palabra era "+state.word,false)}
+ if(t==="precision"&&a==="precision-start"){state.running=true;state.start=performance.now();setActions(btn("⏹ Parar","precision-stop"));interval=setInterval(()=>{state.value=(performance.now()-state.start)/1000;if($("precisionTime"))$("precisionTime").textContent=state.value.toFixed(2)+" s"},20)}
+ if(t==="precision"&&a==="precision-stop"){let d=Math.abs(state.value-5);finish("Tiempo: "+state.value.toFixed(2)+" s",d<.35,Math.max(0,100-Math.round(d*20)))}
+ if(t==="balance"&&a==="balance-check"){let n=+$("balanceSlider").value;finish("Indicador: "+n,n>=45&&n<=55,100-Math.abs(50-n))}
+ if(t==="snake"&&a.startsWith("snake-"))snakeMove(a.slice(6));
+ if(t==="orbital"&&a.startsWith("sector-"))orbitalPick(+a.slice(7));
+}
+function targetNext(){setArena(`<div class="center"><div class="big">${state.n}/10</div><div style="height:220px;position:relative;background:#0d0b1c;border:1px dashed #50416f;border-radius:12px"><button data-act="target" style="position:absolute;left:${rand(75)}%;top:${rand(70)}%;font-size:26px">🌟</button></div></div>`)}
+function pairsDraw(){let el=$("pairGrid");if(el)el.innerHTML=state.cards.map((v,i)=>`<button data-act="pair-${i}" ${state.matched.includes(i)?"disabled":""}>${state.matched.includes(i)||state.open.includes(i)?v:"❔"}</button>`).join("")}
+function pairsPick(i){if(state.open.includes(i)||state.matched.includes(i))return;state.open.push(i);pairsDraw();if(state.open.length===2){if(state.cards[state.open[0]]===state.cards[state.open[1]]){state.matched.push(...state.open);state.open=[];pairsDraw();if(state.matched.length===8)finish("¡Parejas encontradas!",true,state.matched.length/2)}else schedule(()=>{if(ended)return;state.open=[];pairsDraw()},650)}}
+function mathNext(){let x=1+rand(12),y=1+rand(10),op=rand(3);if(op===0){state.question=`${x} + ${y}`;state.answer=x+y}else if(op===1){if(x<y)[x,y]=[y,x];state.question=`${x} − ${y}`;state.answer=x-y}else{state.question=`${x} × ${y}`;state.answer=x*y}let opts=shuffle([...new Set([state.answer,state.answer+1+rand(5),Math.max(0,state.answer-1-rand(4)),state.answer+2+rand(8)])]);if(!opts.includes(state.answer))opts[0]=state.answer;opts=shuffle(opts);setArena(`<div class="center"><div class="small">Pregunta ${state.round+1}/${state.limit}</div><div class="big">${state.question} = ?</div><div class="rowbtn">${opts.map(n=>btn(n,"ans-"+n)).join("")}</div></div>`)}
+function catchPulse(){state.active=false;if($("catchSymbol"))$("catchSymbol").textContent="🌑";schedule(()=>{if(ended)return;state.active=true;if($("catchSymbol"))$("catchSymbol").textContent="🟢";schedule(()=>{if(ended)return;state.active=false;catchPulse()},700)},700+rand(1200))}
+function typingDraw(){setArena(`<div class="center"><p>Palabra ${state.i+1}/5</p><div class="big">${state.words[state.i]}</div><form><input class="field" id="typeInput" autocomplete="off" required placeholder="Escribe la palabra"><button class="primary">Enviar</button></form></div>`)}
+const colorNames=["ROJO","AZUL","VERDE","MORADO","AMARILLO"],colorHex={"ROJO":"#fb7185","AZUL":"#38bdf8","VERDE":"#4ade80","MORADO":"#c084fc","AMARILLO":"#facc15"};
+function colorNext(){state.answer=colorNames[rand(5)];let shown=colorNames[rand(5)];setArena(`<div class="center"><p>¿De qué color es el texto?</p><div class="big" style="color:${colorHex[state.answer]}">${shown}</div><div class="rowbtn">${shuffle([...colorNames]).map(c=>btn(c,"color-"+c)).join("")}</div><p>Ronda ${state.round+1}/5</p></div>`)}
+function higherDraw(){state.danger=rand(3);$("dodgeText")&&($("dodgeText").textContent="Carril peligroso: "+["izquierda","centro","derecha"][state.danger]);if($("higherNum"))$("higherNum").textContent=state.num;if(current.type==="higher")setArena(`<div class="center"><p>Número actual</p><div class="big">${state.num}</div><div class="rowbtn">${btn("📈 Mayor","higher")}${btn("📉 Menor","lower")}</div><p>Ronda ${state.round+1}/5</p></div>`)}
+const mazeWalls=[1,4,5,7,9,10,13];
+function mazeDraw(){let el=$("mazeGrid");if(el)el.innerHTML=Array.from({length:16},(_,i)=>`<button disabled style="background:${i===state.pos?"#2563eb":mazeWalls.includes(i)?"#090817":i===15?"#14532d":"#292344"}">${i===state.pos?"🧍":mazeWalls.includes(i)?"⬛":i===15?"🏁":"·"}</button>`).join("")}
+function mazeMove(d){let r=Math.floor(state.pos/4),c=state.pos%4;if(d==="up")r--;if(d==="down")r++;if(d==="left")c--;if(d==="right")c++;if(r<0||r>3||c<0||c>3)return;let n=r*4+c;if(mazeWalls.includes(n)){setMessage("Hay una pared.");return}state.pos=n;mazeDraw();if(n===15)finish("¡Has escapado!",true,1)}
+function whackNext(){state.target=rand(9);setArena(`<div class="center">Atrapa diez objetivos: ${state.n}/10</div><div class="tiles three">${Array.from({length:9},(_,i)=>btn(i===state.target?"🐛":"·","whack-"+i)).join("")}</div>`)}
+function minesDraw(){setArena('<div class="center">Abre trece casillas seguras. Hay tres minas.</div><div class="tiles" id="mineGrid"></div>');$("mineGrid").innerHTML=Array.from({length:16},(_,i)=>`<button data-act="mine-${i}" ${state.open.includes(i)?"disabled":""}>${state.open.includes(i)?"✓":"?"}</button>`).join("")}
+function orderDraw(){setArena('<div class="center">Pulsa los números del 1 al 5 en orden.</div><div class="tiles" id="orderGrid"></div>');$("orderGrid").innerHTML=state.nums.map(n=>btn(n,"order-"+n,n<state.next?"disabled":"")).join("")}
+const questions=[["¿Cuál es el planeta rojo?","Marte",["Marte","Venus","Saturno","Mercurio"]],["¿Cuántos lados tiene un hexágono?","6",["5","6","7","8"]],["¿Cuál es el océano más grande?","Pacífico",["Índico","Ártico","Pacífico","Atlántico"]],["¿Cuánto es 9 × 7?","63",["56","63","72","49"]],["¿Qué estrella ilumina la Tierra?","El Sol",["Sirio","El Sol","Vega","Polaris"]],["¿Cuántos minutos tiene una hora?","60",["30","45","60","90"]]];
+function quizNext(){let q=state.qs[state.round];state.options=shuffle(q[2]);setArena(`<div class="center"><p>Pregunta ${state.round+1}/5</p><div class="big" style="font-size:23px">${q[0]}</div><div class="rowbtn">${state.options.map((a,i)=>btn(a,"quiz-"+i)).join("")}</div></div>`)}
+function tttDraw(){setArena('<div class="center">Tú eres ❌. Ordenador: ⭕.</div><div class="tiles three" id="tttGrid"></div>');$("tttGrid").innerHTML=state.board.map((v,i)=>btn(v||"·","ttt-"+i,v?"disabled":"")).join("")}
+function winner(b){for(let [a,c,d] of [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]])if(b[a]&&b[a]===b[c]&&b[a]===b[d])return b[a];return b.every(Boolean)?"draw":""}
+function tttPick(i){if(state.board[i])return;state.board[i]="❌";let w=winner(state.board);if(w){tttDraw();finish(w==="❌"?"¡Has ganado!":"Empate.",w==="❌",w==="❌"?1:0);return}let free=state.board.map((v,j)=>v?null:j).filter(v=>v!==null);state.board[free[rand(free.length)]]="⭕";w=winner(state.board);tttDraw();if(w)finish(w==="❌"?"¡Has ganado!":w==="⭕"?"El ordenador ha ganado.":"Empate.",w==="❌",w==="❌"?1:0)}
+function rpsPick(p){let cpu=["rock","paper","scissors"][rand(3)],win=(p==="rock"&&cpu==="scissors")||(p==="paper"&&cpu==="rock")||(p==="scissors"&&cpu==="paper");if(win)state.score++;state.round++;$("rpsResult").textContent=`Tú: ${p} · CPU: ${cpu}`;$("rpsScore").textContent=`Victorias: ${state.score} · Ronda ${state.round}/5`;if(state.score>=3)finish("¡Has ganado el duelo!",true,state.score);else if(state.round>=5)finish("Duelo terminado.",false,state.score)}
+function hangDraw(){if(!$("hangWord"))return;$("hangWord").textContent=state.word.split("").map(c=>state.guessed.includes(c)?c:"_").join(" ");$("hangErrors").textContent="Errores: "+state.errors+"/6";$("hangLetters").innerHTML="ABCDEFGHIJKLMNÑOPQRSTUVWXYZ".split("").map(c=>btn(c,"letter-"+c,state.guessed.includes(c)?"disabled":"")).join("")}
+function hangPick(c){if(state.guessed.includes(c))return;state.guessed.push(c);if(!state.word.includes(c))state.errors++;hangDraw();if(state.word.split("").every(x=>state.guessed.includes(x)))finish("¡Palabra descubierta!",true,state.word.length-state.errors);else if(state.errors>=6)finish("La palabra era "+state.word,false)}
+function patternDraw(show){let el=$("patternGrid");if(el)el.innerHTML=Array.from({length:16},(_,i)=>`<button data-act="pattern-${i}" ${state.selected.includes(i)?"disabled":""} style="background:${(show&&state.pattern.includes(i))||state.selected.includes(i)?"#7c3aed":"#292344"}">${state.selected.includes(i)?"✓":show&&state.pattern.includes(i)?"✦":"·"}</button>`).join("")}
+function snakeDraw(){let el=$("snakeGrid");if(!el)return;el.innerHTML=Array.from({length:16},(_,i)=>`<button disabled style="background:${state.snake.includes(i)?"#2563eb":state.apple===i?"#166534":"#292344"}">${state.snake.includes(i)?"🐍":state.apple===i?"🍎":"·"}</button>`).join("");$("snakeScore").textContent=`Energía: ${state.score}/5`}
+function snakeMove(d){let h=state.snake[state.snake.length-1],r=Math.floor(h/4),c=h%4;if(d==="up")r--;if(d==="down")r++;if(d==="left")c--;if(d==="right")c++;if(r<0||r>3||c<0||c>3){finish("Chocaste contra el borde.",false,state.score);return}let n=r*4+c;if(state.snake.includes(n)){finish("Chocaste con tu cuerpo.",false,state.score);return}state.snake.push(n);if(n===state.apple){if(++state.score>=5){finish("¡Cinco energías recogidas!",true,state.score);return}do{state.apple=rand(16)}while(state.snake.includes(state.apple))}else state.snake.shift();snakeDraw()}
+function orbitalNext(){state.threat=rand(4);setArena(`<div class="center"><div class="big">🪐</div><p>Sector amenazado: <strong>${["NORTE ⬆️","ESTE ➡️","SUR ⬇️","OESTE ⬅️"][state.threat]}</strong></p><div class="tiles">${["⬆️","➡️","⬇️","⬅️"].map((x,i)=>btn(x,"sector-"+i)).join("")}</div><p>Ronda ${state.round+1}/5 · Vidas: ${state.hp}</p></div>`)}
+function orbitalPick(n){if(n!==state.threat)state.hp--;state.round++;if(state.hp<=0){finish("El núcleo ha sido destruido.",false,state.round);return}if(state.round>=5)finish("¡Órbita protegida!",true,state.round);else orbitalNext()}
+
+/* MOTOR DE JUEGOS 3D: perspectiva en Canvas, sin bibliotecas externas */
+const modes={
+ runner:{goal:12,help:"← → cambia de carril; ↑ salta. Evita los bloques."},
+ racing:{goal:15,help:"← → dirige el coche. Evita el tráfico y completa la carrera."},
+ flight:{goal:10,help:"↑ asciende y ↓ desciende. Atraviesa los anillos."},
+ tunnel:{goal:12,help:"← → gira por el túnel. Pulsa el lado libre."},
+ basketball:{goal:3,help:"Haz clic en la canasta cuando el indicador de potencia esté en la zona verde."},
+ soccer:{goal:3,help:"Haz clic en uno de los tres huecos para marcar un gol."},
+ tennis:{goal:8,help:"Pulsa GOLPEAR cuando la pelota esté cerca de ti."},
+ bowling:{goal:1,help:"Ajusta la dirección con ← → y lanza con ESPACIO."},
+ platform:{goal:8,help:"Pulsa ESPACIO para saltar entre plataformas."},
+ maze3d:{goal:8,help:"Usa las flechas para avanzar por el laberinto en perspectiva."},
+ mining:{goal:6,help:"Haz clic en los cristales azules; evita las rocas oscuras."},
+ tower:{goal:8,help:"Haz clic en los enemigos antes de que alcancen la torre."},
+ drone:{goal:8,help:"Haz clic en los drones enemigos para derribarlos."},
+ submarine:{goal:6,help:"↑ ↓ cambia la profundidad. Recoge perlas y evita las minas."},
+ ski:{goal:10,help:"← → esquía entre los obstáculos."},
+ parkour:{goal:8,help:"ESPACIO salta; ↓ deslízate bajo las barreras."},
+ shooter:{goal:8,help:"Haz clic en las dianas que aparecen en la pantalla."},
+ explore:{goal:5,help:"Busca las reliquias brillantes y pulsa sobre ellas."},
+ fishing:{goal:3,help:"Pulsa RECOGER cuando el indicador de picada esté verde."},
+ golf:{goal:1,help:"Ajusta la dirección con ← → y pulsa ESPACIO para golpear."},
+ pinball:{goal:12,help:"Pulsa ← o → para activar las palancas y evitar que caiga la bola."},
+ boxing:{goal:5,help:"Pulsa GOLPEAR cuando el robot baje la guardia; bloquea cuando ataque."},
+ kart:{goal:3,help:"← → controla el kart. Completa tres vueltas y evita los conos."},
+ climb:{goal:8,help:"Pulsa la presa iluminada para subir sin caer."},
+ planet:{goal:8,help:"Pulsa el sector donde impactará el meteorito."},
+ cube:{goal:4,help:"Gira el cubo con las flechas hasta alinear los cuatro lados."},
+ moto:{goal:12,help:"← → inclina la moto para esquivar las barreras."},
+ goalie:{goal:5,help:"Mueve al portero con ← → para detener cinco disparos."},
+ gravity:{goal:8,help:"Pulsa ESPACIO para invertir la gravedad y superar barreras."},
+ arena:{goal:10,help:"Muévete con las flechas, recoge energía y evita a los perseguidores."}
+};
+let canvas=null,ctx=null,world=null;
+function start3D(type){
+ state.type=type;state.score=0;state.x=0;state.y=0;state.lane=1;state.power=30;state.round=0;state.dir=1;state.t=0;state.objects=[];state.cool=0;state.hp=3;state.combo=0;state.ballX=0;state.ballY=0;state.angle=0;state.laps=0;state.phase=0;state.keys={};state.goal=modes[type].goal;
+ setArena(`<div class="center"><p class="small">${modes[type].help}</p><canvas id="world" width="800" height="500" aria-label="Área de juego"></canvas><div class="bar"><div id="progress" style="width:0%"></div></div><p id="scoreText">Progreso: 0/${state.goal}</p><div class="controls" id="worldControls"></div></div>`);
+ canvas=$("world");ctx=canvas.getContext("2d");
+ const control=$("worldControls");
+ if(["basketball","soccer","tennis","bowling","mining","tower","drone","shooter","explore","fishing","golf","boxing","climb","planet","cube","goalie"].includes(type)){
+  control.innerHTML=btn(({basketball:"🏀 Lanzar",soccer:"⚽ Disparar",tennis:"🎾 Golpear",bowling:"🎳 Lanzar",fishing:"🎣 Recoger",golf:"⛳ Golpear",boxing:"🥊 Golpear",climb:"🧗 Subir"}[type]||"ACTUAR"),"do");
+ }
+ if(type==="basketball"||type==="golf"||type==="bowling"){control.innerHTML+=btn("− Potencia","less")+btn("+ Potencia","more")}
+ if(type==="tunnel"||type==="planet"||type==="cube")control.innerHTML+=btn("Girar ↺","left")+btn("Girar ↻","right");
+ if(type==="pinball")control.innerHTML=btn("⬅️ Palanca izquierda","left")+btn("➡️ Palanca derecha","right");
+ if(type==="runner"||type==="racing"||type==="ski"||type==="kart"||type==="moto"||type==="goalie")control.innerHTML=btn("⬅️","left")+btn("➡️","right");
+ if(["runner","platform","parkour","gravity","flight","submarine"].includes(type))control.innerHTML+=btn(type==="flight"||type==="submarine"?"⬆️ Ascender":"⬆️ Saltar","up")+btn(type==="submarine"?"⬇️ Descender":"⬇️ Acción","down");
+ if(type==="fishing")control.innerHTML=btn("🎣 Recoger","do");
+ canvas.addEventListener("pointerdown",canvasPointer);
+ draw3D();raf=requestAnimationFrame(loop3D);
+}
+function canvasPointer(e){
+ if(ended)return;
+ const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*800,y=(e.clientY-r.top)/r.height*500,t=state.type;
+ if(["shooter","explore","mining","tower","drone"].includes(t)){hitTarget(x,y);return}
+ if(t==="basketball"){if(state.phase===0){state.phase=1;state.power=30;setMessage("Pulsa otra vez cuando la potencia esté en verde.");return}if(state.power>=45&&state.power<=65)progress3D("¡Enceste perfecto!");else{setMessage("La pelota no entró. Prueba otra vez.");state.phase=0}return}
+ if(t==="soccer"){let goal=Math.abs(x-state.targetX)<95;if(goal)progress3D("¡Gol!");else{setMessage("El portero ha parado el disparo.");state.t+=1}return}
+ if(t==="tennis"){if(state.ballY>330)progress3D("¡Buen golpe!");else setMessage("Espera a que la pelota se acerque.");return}
+ if(t==="bowling"||t==="golf"){state.angle=(x-400)/400;state.phase=1;setMessage("Dirección seleccionada. Pulsa ESPACIO o LANZAR.");return}
+ if(t==="climb"){if(Math.abs(x-state.targetX)<150)progress3D("¡Has encontrado una presa segura!");else{setMessage("Presa demasiado lejos.");state.hp--}return}
+ if(t==="planet"){let a=Math.atan2(y-250,x-400);if(Math.abs(a-state.targetAngle)<.65)progress3D("¡Meteorito interceptado!");else setMessage("Escudo mal orientado.");return}
+ if(t==="cube"){state.angle=(state.angle+1)%4;if(state.angle===state.targetSide)progress3D("¡Cara alineada!");else setMessage("Gira el cubo hasta encontrar la cara correcta.");return}
+ if(t==="goalie"){let correct=Math.abs(x-state.targetX)<120;if(correct)progress3D("¡Parada espectacular!");else{state.hp--;setMessage("Gol recibido. Muévete hacia el balón.");newTarget()}return}
+ if(t==="fishing"){if(state.phase===1&&state.t%100>55&&state.t%100<78)progress3D("¡Has pescado un pez!");else setMessage("No ha picado todavía.");return}
+ if(t==="boxing"){if(state.phase===0)progress3D("¡Golpe conectado!");else{state.hp--;setMessage("¡Te han golpeado! Espera a que baje la guardia.")}return}
+}
+function control3D(a){
+ const t=state.type;
+ if(a==="left")state.x=Math.max(-1,state.x-.55);
+ if(a==="right")state.x=Math.min(1,state.x+.55);
+ if(a==="up"){
+  if(["runner","platform","parkour","gravity"].includes(t)){state.y=1;state.jump=state.t}
+  else if(t==="flight"||t==="submarine")state.y=Math.max(-1,state.y-.5);
+  else if(t==="climb")progress3D("¡Has subido un nivel!");
+ }
+ if(a==="down"){if(t==="flight"||t==="submarine")state.y=Math.min(1,state.y+.5);else if(t==="parkour")state.slide=state.t}
+ if(a==="less")state.power=Math.max(0,state.power-10);
+ if(a==="more")state.power=Math.min(100,state.power+10);
+ if(a==="do"){
+  if(t==="tennis")state.ballY=400;
+  else if(t==="fishing"){if(state.phase===1&&state.t%100>55&&state.t%100<78)progress3D("¡Buena captura!");else setMessage("Espera a que pique el pez.")}
+  else if(t==="boxing"){if(state.phase===0)progress3D("¡Golpe conectado!");else state.hp--}
+  else if(t==="climb")progress3D("¡Has subido!");
+  else if(t==="basketball"){if(state.power>=45&&state.power<=65)progress3D("¡Enceste!");else setMessage("Potencia ideal: 45–65.")}
+  else if(t==="soccer")progress3D("¡Disparo ejecutado!");
+  else if(t==="bowling"||t==="golf")progress3D("¡Lanzamiento realizado!");
+ }
+ if(a==="left"||a==="right"){
+  if(t==="cube"){state.angle=(state.angle+(a==="left"?3:1))%4;if(state.angle===state.targetSide)progress3D("¡Cara alineada!")}
+  if(t==="planet")state.angle+=(a==="left"?-.5:.5);
+ }
+}
+$("arena").addEventListener("click",e=>{let b=e.target.closest("#worldControls [data-act]");if(b&&current&&current.is3d)control3D(b.dataset.act)});
+function progress3D(msg){
+ if(ended)return;state.score++;setMessage(msg);$("scoreText").textContent=`Progreso: ${state.score}/${state.goal}`;$("progress").style.width=Math.min(100,state.score/state.goal*100)+"%";
+ if(state.score>=state.goal){finish("¡Desafío superado!",true,state.score);return}
+ state.phase=0;newTarget();
+}
+function newTarget(){
+ state.targetX=100+rand(600);state.targetY=100+rand(250);state.targetAngle=Math.random()*Math.PI*2;state.targetSide=rand(4);
+ if(state.type==="soccer"||state.type==="goalie")state.targetX=150+rand(500);
+}
+function hitTarget(x,y){
+ const t=state.type;
+ if(t==="mining"||t==="explore"){
+  let nearest=null,dist=999;
+  state.objects.forEach(o=>{let d=Math.hypot(o.x-x,o.y-y);if(d<dist){dist=d;nearest=o}});
+  if(nearest&&dist<70){if(nearest.bad){setMessage("¡Era una roca peligrosa!");state.hp--;state.objects=state.objects.filter(o=>o!==nearest)}else{state.objects=state.objects.filter(o=>o!==nearest);progress3D(t==="mining"?"Cristal extraído.":"Reliquia encontrada.")}}
+  else setMessage("Apunta al objeto brillante.");return
+ }
+ if(t==="tower"||t==="drone"||t==="shooter"){
+  let nearest=null,dist=999;
+  state.objects.forEach(o=>{let d=Math.hypot(o.x-x,o.y-y);if(d<dist){dist=d;nearest=o}});
+  if(nearest&&dist<65){state.objects=state.objects.filter(o=>o!==nearest);progress3D("¡Objetivo alcanzado!")}else setMessage("¡Fallaste el disparo!");
+ }
+}
+function loop3D(){
+ if(!current||!current.is3d||ended)return;
+ state.t++;update3D();draw3D();raf=requestAnimationFrame(loop3D)
+}
+function update3D(){
+ let t=state.type;
+ if(t==="basketball"){state.power=30+(Math.sin(state.t/12)+1)*35}
+ if(t==="soccer"||t==="goalie"){if(state.t%100===0)newTarget()}
+ if(t==="tennis"){state.ballY=220+Math.sin(state.t/12)*150}
+ if(t==="fishing"){state.phase=(Math.floor(state.t/100)%2);if(state.phase===1&&state.t%100===0)setMessage("¡Ha picado! Pulsa recoger en el momento justo.")}
+ if(t==="boxing"){state.phase=Math.floor(state.t/70)%2}
+ if(t==="climb"&&state.t%100===0)newTarget()
+ if(t==="planet"&&state.t%90===0)newTarget()
+ if(t==="tower"||t==="drone"||t==="shooter"||t==="mining"||t==="explore"){
+  if(state.t%75===0&&state.objects.length<8){state.objects.push({x:70+rand(660),y:100+rand(300),bad:(t==="mining"&&Math.random()<.28),r:14+rand(10),vx:(Math.random()-.5)*2,vy:(Math.random()-.5)*1.4})}
+  state.objects.forEach(o=>{o.x+=o.vx;o.y+=o.vy;if(o.x<25||o.x>775)o.vx*=-1;if(o.y<65||o.y>475)o.vy*=-1});
+ }
+ if(t==="runner"||t==="racing"||t==="ski"||t==="kart"||t==="moto"||t==="submarine"||t==="flight"||t==="arena"||t==="platform"||t==="parkour"||t==="gravity"||t==="tunnel"){
+  if(state.t%65===0){state.obstacleLane=rand(3);state.obstacleDepth=0}
+  state.obstacleDepth=(state.obstacleDepth||0)+2.2;
+  if(state.obstacleDepth>450){state.obstacleDepth=0;if(t==="runner"||t==="racing"||t==="ski"||t==="kart"||t==="moto"){if(state.obstacleLane===Math.round(state.x+1)&&!(state.jump&&state.t-state.jump<25)&&!(state.slide&&state.t-state.slide<25)){state.hp--;setMessage("¡Obstáculo! Vidas: "+state.hp);if(state.hp<=0){finish("Se acabaron las vidas.",false,state.score);return}}else progress3D("¡Obstáculo superado!")}}
+ }
+ if(t==="pinball"){if(state.t%45===0)state.objects.push({x:100+rand(600),y:100,r:12});state.objects.forEach(o=>o.y+=4);state.objects=state.objects.filter(o=>o.y<470)}
+ if(t==="cube"&&state.t%120===0){state.targetSide=rand(4)}
+ if(t==="bowling"||t==="golf"){if(state.t%160===0)newTarget()}
+ if(t==="platform"&&state.t%90===0){if(!(state.jump&&state.t-state.jump<25)){state.hp--;if(state.hp<=0)finish("Caíste al vacío.",false,state.score)}else progress3D("¡Salto perfecto!")}
+ if(t==="arena"){if(state.t%90===0)progress3D("¡Has sobrevivido a una oleada!")}
+}
+function poly(points,fill,stroke="#38bdf8"){ctx.beginPath();ctx.moveTo(points[0][0],points[0][1]);points.slice(1).forEach(p=>ctx.lineTo(p[0],p[1]));ctx.closePath();ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle=stroke;ctx.stroke()}
+function line(x1,y1,x2,y2,color="#38bdf8",w=1){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=color;ctx.lineWidth=w;ctx.stroke()}
+function circle(x,y,r,color){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=color;ctx.fill()}
+function draw3D(){
+ if(!ctx)return;const t=state.type;ctx.clearRect(0,0,800,500);
+ let grad=ctx.createLinearGradient(0,0,0,500);grad.addColorStop(0,"#090817");grad.addColorStop(1,"#20133c");ctx.fillStyle=grad;ctx.fillRect(0,0,800,500);
+ for(let i=0;i<14;i++){let x=(i*73+state.t*.4)%800;circle(x,(i*47)%170,1.5,"#b8a7ff")}
+ ctx.textAlign="center";ctx.font="bold 17px system-ui";ctx.fillStyle="#d8c9ff";ctx.fillText(t.toUpperCase().replace("3D","")+" · "+state.score+"/"+state.goal,400,30);
+ if(["runner","racing","ski","kart","moto","platform","parkour","gravity","flight","submarine","arena"].includes(t))drawTrack(t);
+ else if(t==="tunnel")drawTunnel();
+ else if(t==="basketball")drawBasketball();
+ else if(t==="soccer"||t==="goalie")drawSoccer(t);
+ else if(t==="tennis")drawTennis();
+ else if(t==="bowling")drawBowling();
+ else if(t==="maze3d")drawMaze3d();
+ else if(t==="mining"||t==="explore"||t==="tower"||t==="drone"||t==="shooter")drawObjects(t);
+ else if(t==="fishing")drawFishing();
+ else if(t==="golf")drawGolf();
+ else if(t==="pinball")drawPinball();
+ else if(t==="boxing")drawBoxing();
+ else if(t==="climb")drawClimb();
+ else if(t==="planet")drawPlanet();
+ else if(t==="cube")drawCube();
+ ctx.textAlign="left";ctx.font="14px system-ui";ctx.fillStyle="#fff";ctx.fillText("Puntos: "+state.score,18,475);
+}
+function drawTrack(t){
+ let cx=400+state.x*100;
+ poly([[210,90],[590,90],[780,500],[20,500]],"#11132d","#8b5cf6");
+ for(let i=0;i<7;i++){let y=100+((i*70+state.t*3)%400),w=(y/500)*220;line(400-w,y,400+w,y,"#382b65")}
+ line(400,90,400,500,"#3d3264",2);
+ if(t==="flight"||t==="submarine"){for(let i=0;i<5;i++){let y=(i*110+state.t*3)%450+25;ctx.strokeStyle="#38bdf8";ctx.lineWidth=5;ctx.beginPath();ctx.ellipse(400+Math.sin(i+state.t/35)*90,y,40,18,0,0,Math.PI*2);ctx.stroke()}}
+ if(t==="platform"||t==="parkour"||t==="gravity"){for(let i=0;i<5;i++){let y=130+((i*85+state.t*2)%350);poly([[250,y],[550,y],[580,y+18],[220,y+18]],"#33215c","#38bdf8")}}
+ if(t==="arena"){circle(400,250,160,"#11152f");circle(400,250,140,"#161a3c")}
+ let lane=Math.round(state.x+1);let carX=270+lane*130;
+ poly([[carX-35,400],[carX-25,365],[carX+25,365],[carX+35,400]],"#7c3aed","#67e8f9");
+ poly([[carX-50,445],[carX-35,400],[carX+35,400],[carX+50,445]],"#2563eb","#38bdf8");
+ circle(carX-35,445,9,"#090817");circle(carX+35,445,9,"#090817");
+ if(state.obstacleDepth>0&&state.obstacleDepth<450){let p=state.obstacleDepth/450,ox=400+(state.obstacleLane-1)*p*260,oy=80+p*350,s=8+p*28;poly([[ox-s,oy-s],[ox+s,oy-s],[ox+s,oy+s],[ox-s,oy+s]],"#fb7185","#fecdd3")}
+}
+function drawTunnel(){for(let i=0;i<9;i++){let p=((i*65+state.t*4)%500)/500;let r=40+p*390;ctx.strokeStyle=i%2?"#38bdf8":"#a855f7";ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(400+Math.sin(state.angle+i)*p*100,250,r,r*.7,0,0,Math.PI*2);ctx.stroke()}circle(400,250,20,"#fff");ctx.fillStyle="#c4b5fd";ctx.fillText("GIRA PARA ENCONTRAR LA SALIDA",240,450)}
+function drawBasketball(){poly([[100,100],[700,100],[760,450],[40,450]],"#171638","#51417d");line(300,250,500,250,"#38bdf8",4);ctx.strokeStyle="#fb7185";ctx.lineWidth=6;ctx.beginPath();ctx.ellipse(400,250,65,18,0,0,Math.PI*2);ctx.stroke();circle(400,360,22,"#f97316");ctx.fillStyle="#fde68a";ctx.fillText("POTENCIA "+Math.round(state.power),330,420);ctx.fillStyle="#4ade80";ctx.fillRect(300,440,200,12);ctx.fillStyle="#fff";ctx.fillRect(300+state.power*2,435,4,22)}
+function drawSoccer(t){poly([[80,80],[720,80],[780,450],[20,450]],"#12402f","#4ade80");for(let i=0;i<5;i++)line(120+i*140,100,400+(i-2)*120,450,"#23694b");poly([[250,100],[550,100],[570,200],[230,200]],"#dbeafe","#38bdf8");line(400,100,400,200,"#fff");circle(state.targetX||400,150,18,"#fb7185");circle(400,380,15,"#fff")}
+function drawTennis(){poly([[180,90],[620,90],[750,450],[50,450]],"#134e4a","#38bdf8");line(400,90,400,450,"#fff");line(180,250,620,250,"#fff");line(400,250,400,270,"#fff",4);circle(400+Math.sin(state.t/15)*150,state.ballY||250,13,"#fde047");poly([[350,400],[450,400],[470,435],[330,435]],"#7c3aed","#38bdf8")}
+function drawBowling(){poly([[260,90],[540,90],[700,450],[100,450]],"#20153e","#38bdf8");for(let i=0;i<4;i++)for(let j=0;j<4-i;j++){let x=400+(j-(3-i)/2)*28,y=150+i*30;circle(x,y,10,"#f5f3ff");circle(x,y-3,4,"#fb7185")}circle(400+state.angle*100,390,22,"#38bdf8");ctx.fillStyle="#fff";ctx.fillText("Dirección: "+Math.round(state.angle*100),330,440)}
+function drawMaze3d(){for(let i=0;i<8;i++){let p=i/8,w=40+p*350,y=90+i*45;line(400-w,y,400-w-40,y+45,"#8b5cf6",3);line(400+w,y,400+w+40,y+45,"#8b5cf6",3);line(400-w,y,400+w,y,"#38bdf8",2)}poly([[360,430],[440,430],[460,470],[340,470]],"#7c3aed","#38bdf8");ctx.fillStyle="#fff";ctx.fillText("PASILLO "+(state.score+1),350,70)}
+function drawObjects(t){
+ state.objects.forEach(o=>{if(t==="mining"||t==="explore"){circle(o.x,o.y,o.r,o.bad?"#44415c":"#38bdf8");if(!o.bad){circle(o.x,o.y,o.r*.4,"#e0f2fe");line(o.x-o.r,o.y,o.x+o.r,o.y,"#fff")}}else{poly([[o.x,o.y-o.r],[o.x+o.r,o.y],[o.x,o.y+o.r],[o.x-o.r,o.y]],t==="tower"?"#fb7185":"#a855f7","#67e8f9");circle(o.x,o.y,4,"#fff")}});ctx.fillStyle="#fff";ctx.fillText("Pulsa los objetivos",300,460)}
+function drawFishing(){poly([[80,80],[720,80],[800,500],[0,500]],"#0c4a6e","#38bdf8");for(let i=0;i<7;i++)line(30,160+i*45,770,160+i*45,"#155e75");let fishX=100+(state.t*3)%600;circle(fishX,280,18,"#f97316");poly([[fishX-18,280],[fishX-38,265],[fishX-38,295]],"#fb7185");line(400,70,400,220,"#d6d3d1",3);line(400,220,fishX,280,"#d6d3d1",1);if(state.phase)circle(fishX,280,27,"#4ade8055")}
+function drawGolf(){poly([[100,80],[700,80],[800,500],[0,500]],"#14532d","#4ade80");circle(400,150,25,"#090817");circle(400+Math.sin(state.t/35)*150,380,10,"#fff");line(400,400,400+state.angle*200,180,"#fde68a",3);ctx.fillStyle="#fff";ctx.fillText("Fuerza "+state.power,340,450)}
+function drawPinball(){poly([[220,70],[580,70],[650,450],[150,450]],"#1e1b4b","#38bdf8");state.objects.forEach(o=>circle(o.x,o.y,o.r,"#fde047"));line(280,400,360,430,"#c084fc",9);line(520,400,440,430,"#38bdf8",9);circle(400,250+Math.sin(state.t/12)*120,13,"#fff");ctx.fillStyle="#fff";ctx.fillText("Puntos: "+state.score,330,470)}
+function drawBoxing(){poly([[150,100],[650,100],[720,430],[80,430]],"#28153e","#a855f7");circle(400,230,70,"#7c3aed");circle(400,210,38,"#f3e8ff");line(400,300,400,400,"#38bdf8",15);line(400,320,320,360,"#a855f7",12);line(400,320,480,360,"#a855f7",12);ctx.fillStyle=state.phase?"#fb7185":"#4ade80";ctx.fillText(state.phase?"¡ATAQUE ENEMIGO!":"¡RIVAL DESCUBIERTO!",285,455)}
+function drawClimb(){for(let i=0;i<8;i++){let x=state.targetX+(i%2?80:-80),y=100+i*45;circle(x,y,12,i%2?"#a855f7":"#38bdf8")}poly([[350,420],[450,420],[465,455],[335,455]],"#7c3aed","#38bdf8");ctx.fillStyle="#fff";ctx.fillText("Encuentra la presa brillante",280,480)}
+function drawPlanet(){circle(400,260,110,"#2563eb");circle(365,225,32,"#38bdf8");circle(430,290,45,"#1d4ed8");ctx.strokeStyle="#a855f7";ctx.lineWidth=12;ctx.beginPath();ctx.ellipse(400,260,180,65,state.angle,0,Math.PI*2);ctx.stroke();let x=400+Math.cos(state.targetAngle)*220,y=260+Math.sin(state.targetAngle)*130;circle(x,y,17,"#fb7185");line(x,y,400,260,"#fb7185",2)}
+function drawCube(){let s=110,x=400,y=250,a=state.angle;let colors=["#38bdf8","#a855f7","#4ade80","#f97316"];let dx=Math.sin(a*Math.PI/2)*50,dy=Math.cos(a*Math.PI/2)*30;poly([[x-s,y-s],[x,y-s-50],[x+s,y-s],[x+dx,y+dy]],colors[state.angle],"#fff");poly([[x-s,y-s],[x,y-s-50],[x,y+s-50],[x-s,y+s]],colors[(state.angle+1)%4],"#fff");poly([[x,y-s-50],[x+s,y-s],[x+s,y+s],[x,y+s-50]],colors[(state.angle+2)%4],"#fff");ctx.fillStyle="#fff";ctx.fillText("Cara objetivo: "+(state.targetSide+1),340,440)}
+/* Controles físicos y táctiles */
+document.addEventListener("keydown",e=>{
+ if(!current||ended)return;
+ let t=current.type;
+ if(current.is3d){
+  const map={ArrowLeft:"left",ArrowRight:"right",ArrowUp:"up",ArrowDown:"down", " ":"space",Enter:"do"};
+  let a=map[e.key];if(a){e.preventDefault();if(a==="space"){if(t==="bowling"||t==="golf"){progress3D("¡Lanzamiento ejecutado!")}else if(t==="platform"||t==="runner"||t==="parkour"||t==="gravity"){control3D("up")}else if(t==="boxing")control3D("do");else control3D(a)}else control3D(a)}
+ }else if(t==="snake"){let map={ArrowUp:"snake-up",ArrowDown:"snake-down",ArrowLeft:"snake-left",ArrowRight:"snake-right"};if(map[e.key]){e.preventDefault();classicAction(map[e.key])}}
+});
+</script>
+</body>
+</html>
