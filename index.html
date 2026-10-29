@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090b18">
+<title>NEON ARCADE — 60 juegos</title>
+<style>
+:root{--bg:#090b18;--panel:#12162b;--panel2:#191f39;--line:#30385c;--purple:#a879ff;--blue:#54d9ff;--gold:#ffd166;--text:#f5f5ff;--muted:#a4accb;--green:#6dffb3}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at top,#1b1740 0,#090b18 55%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+button,input,select{font:inherit}
+button{border:1px solid #494574;background:#242344;color:white;border-radius:11px;padding:10px 14px;cursor:pointer;transition:.15s}
+button:hover{border-color:var(--blue);transform:translateY(-1px)}
+button:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.primary{background:linear-gradient(110deg,#7548d7,#326bd4);border:0;font-weight:800}
+.gold{background:linear-gradient(110deg,#9d6b19,#dba93c);border:0;color:#fff;font-weight:800}
+header{position:sticky;top:0;z-index:5;background:#090b18ed;border-bottom:1px solid var(--line);backdrop-filter:blur(12px)}
+.top{max-width:1250px;margin:auto;padding:13px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:11px;font-size:21px;font-weight:950;letter-spacing:1px}
+.logo{width:43px;height:43px;display:grid;place-items:center;border-radius:13px;background:linear-gradient(135deg,#9a62ff,#39c8ff);font-size:25px}
+.balance{border:1px solid #615038;background:#302716;padding:9px 14px;border-radius:30px;color:var(--gold);font-weight:900}
+main{max-width:1250px;margin:auto;padding:20px}
+.hero{display:grid;grid-template-columns:1.4fr .6fr;gap:18px;align-items:center;padding:30px;border:1px solid #453b72;border-radius:23px;background:linear-gradient(125deg,#21183e,#111a35 65%,#102b40);overflow:hidden}
+.eyebrow{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--blue);font-weight:900}
+h1{font-size:clamp(32px,5vw,56px);line-height:1.05;margin:12px 0}
+h1 span{background:linear-gradient(90deg,#c6a4ff,#5acbff);background-clip:text;color:transparent}
+p{line-height:1.55}
+.muted{color:var(--muted);font-size:13px}
+.hero-art{text-align:center;font-size:95px;filter:drop-shadow(0 0 20px #8e61ff)}
+.stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.stat{padding:8px 12px;border:1px solid #454166;border-radius:10px;background:#100f25}
+.nav{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}
+.nav button.active{background:#4c368d;border-color:#a879ff}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:22px 0}
+h2{margin:0 0 6px;font-size:25px}
+.controls{display:flex;gap:8px;flex-wrap:wrap}
+input,select{min-width:0;max-width:100%;padding:11px;background:#11152a;color:white;border:1px solid var(--line);border-radius:10px}
+#search{width:220px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.game{padding:15px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,#171b34,#101325);display:flex;flex-direction:column;min-height:210px}
+.game.locked{border-color:#63502d}
+.game-icon{font-size:28px}
+.pill{font-size:10px;font-weight:900;letter-spacing:.7px;padding:5px 8px;border-radius:20px;background:#183e3b;color:var(--green)}
+.pill.premium{background:#493518;color:var(--gold)}
+.pill.unlocked{background:#183e3b;color:var(--green)}
+.game h3{font-size:16px;margin:12px 0 5px}
+.game p{font-size:12px;color:var(--muted);margin:0 0 12px}
+.game-foot{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-top:auto;flex-wrap:wrap}
+.game-foot button{font-size:12px;padding:9px}
+.panel,.reward{padding:18px;border:1px solid var(--line);border-radius:16px;background:#12162b;margin:12px 0}
+.reward-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.reward{text-align:center;margin:0}
+.reward .emoji{font-size:35px}
+.hidden{display:none!important}
+.notice{margin:20px 0;padding:13px;border:1px solid #3e3b67;background:#17152c;border-radius:12px;color:var(--muted);font-size:13px}
+#playPage{margin-top:20px}
+.play-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+#gameCanvas{display:block;width:100%;height:auto;aspect-ratio:16/9;max-height:540px;background:#080b18;border:1px solid #424c79;border-radius:15px;touch-action:manipulation}
+.game-stage{margin-top:14px;padding:12px;border-radius:17px;background:#0c1022;border:1px solid var(--line)}
+.play-controls{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:9px;margin:13px 0}
+.big{font-size:35px;font-weight:950;color:var(--blue)}
+.feedback{text-align:center;min-height:28px;color:var(--green);font-weight:800}
+.modal-back{position:fixed;inset:0;background:#000b;display:grid;place-items:center;z-index:20;padding:18px}
+.modal{width:min(440px,100%);background:#171a32;border:1px solid #6d5aa4;border-radius:19px;padding:23px;box-shadow:0 20px 90px #000b}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:18px}
+footer{text-align:center;color:var(--muted);padding:30px 10px;font-size:12px}
+@media(max-width:900px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.hero{grid-template-columns:1fr}.hero-art{display:none}}
+@media(max-width:600px){main{padding:12px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.game{padding:11px;min-height:220px}.game h3{font-size:14px}.hero{padding:20px}.reward-grid{grid-template-columns:1fr}.brand{font-size:17px}#search{width:100%}.controls{width:100%}.controls input,.controls select{flex:1}}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <div class="brand"><div class="logo">⚡</div><div>NEON ARCADE <div class="muted">ARCADE UNIVERSE · 60 JUEGOS</div></div></div>
+    <div class="balance">🪙 <span id="coinBalance">100</span> monedas</div>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div>
+    <div class="eyebrow">Tu universo arcade</div>
+    <h1>Juega. Supera.<br><span>Domina el 3D.</span></h1>
+    <p>60 desafíos de arcade, lógica, habilidad y aventuras con perspectiva 3D. Gana puntos, consigue monedas y desbloquea nuevos retos.</p>
+    <div class="stats">
+      <div class="stat">🎮 <strong id="playedCount">0</strong> partidas</div>
+      <div class="stat">🔓 <strong id="unlockedCount">0</strong> prémium</div>
+      <div class="stat">🏆 Récord <strong id="bestScore">0</strong></div>
+    </div>
+  </div>
+  <div class="hero-art">🕹️<div style="font-size:13px;letter-spacing:3px;color:#c5b6ff">LEVEL UP</div></div>
+</section>
+
+<nav class="nav">
+  <button class="active" data-page="games">🎮 Juegos</button>
+  <button data-page="rewards">🎁 Recompensas</button>
+  <button data-page="profile">👤 Perfil</button>
+</nav>
+
+<section id="gamesPage">
+  <div class="section-head">
+    <div><h2>Elige tu desafío</h2><div class="muted">30 juegos clásicos + 30 aventuras 3D</div></div>
+    <div class="controls">
+      <input id="search" placeholder="Buscar juego…" aria-label="Buscar juego">
+      <select id="filter" aria-label="Filtrar juegos">
+        <option value="all">Todos</option><option value="free">Gratis</option><option value="premium">Prémium</option><option value="unlocked">Desbloqueados</option>
+      </select>
+    </div>
+  </div>
+  <div id="gameGrid" class="grid"></div>
+  <div id="gameCount" class="muted" style="margin:16px 0"></div>
+  <div class="notice">ℹ️ Las monedas, compras y recompensas de esta versión son demostrativas y se guardan en este navegador. No hay anuncios reales ni compras reales integradas.</div>
+</section>
+
+<section id="playPage" class="hidden">
+  <div class="play-head">
+    <div><div class="eyebrow" id="playType">JUEGO</div><h2 id="playTitle">Juego</h2><div class="muted" id="playInstructions"></div></div>
+    <button id="backBtn">← Volver al catálogo</button>
+  </div>
+  <div class="game-stage">
+    <canvas id="gameCanvas" width="960" height="540" aria-label="Área de juego"></canvas>
+    <div class="play-controls" id="playControls"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="muted" style="text-align:center">Teclado: flechas o WASD · En móvil, usa los controles en pantalla.</div>
+  </div>
+</section>
+
+<section id="rewardsPage" class="hidden">
+  <div class="section-head"><div><h2>Centro de recompensas</h2><div class="muted">Consigue monedas para desbloquear desafíos prémium.</div></div></div>
+  <div class="reward-grid">
+    <article class="reward"><div class="emoji">🌞</div><h3>Regalo diario</h3><p>Recoge una recompensa una vez al día.</p><strong style="color:var(--gold)">+50 monedas</strong><p><button class="primary" id="dailyBtn">Recoger regalo</button></p></article>
+    <article class="reward"><div class="emoji">🎬</div><h3>Vídeo de prueba</h3><p>Simula un vídeo recompensado. No es un anuncio real.</p><strong style="color:var(--gold)">+30 monedas</strong><p><button class="gold" id="videoBtn">Obtener recompensa</button></p></article>
+    <article class="reward"><div class="emoji">🎮</div><h3>Primera partida</h3><p>Juega una partida para completar la misión.</p><strong style="color:var(--gold)">+20 monedas</strong><p id="missionText" class="muted">0/1 partidas</p><button id="missionBtn">Reclamar misión</button></article>
+  </div>
+  <div class="panel"><h3>📜 Historial de monedas</h3><div id="history" class="muted">Todavía no hay movimientos.</div></div>
+</section>
+
+<section id="profilePage" class="hidden">
+  <div class="section-head"><div><h2>Tu perfil</h2><div class="muted">Progreso guardado en este dispositivo.</div></div></div>
+  <div class="reward-grid">
+    <div class="reward"><div class="emoji">🪙</div><h3 id="profileCoins">100</h3><p>Saldo de monedas</p></div>
+    <div class="reward"><div class="emoji">🎮</div><h3 id="profilePlayed">0</h3><p>Partidas terminadas</p></div>
+    <div class="reward"><div class="emoji">🔓</div><h3 id="profileUnlocked">0</h3><p>Juegos prémium desbloqueados</p></div>
+  </div>
+  <div class="panel"><h3>Datos de esta versión</h3><p class="muted">El progreso se almacena en localStorage. No es una cuenta online; borrar los datos del navegador puede eliminar el progreso.</p><button id="resetBtn">Restablecer progreso</button></div>
+</section>
+</main>
+<footer>NEON ARCADE · Juega con cabeza, supera tus récords.</footer>
+<div id="modalRoot"></div>
+<div id="toastRoot" style="position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:30"></div>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const CLASSIC=[
+["stars","🎯","Cazador de estrellas","Apunta a los objetivos y consigue puntos.","Reflejos"],
+["reaction","⚡","Duelo de reflejos","Pulsa cuando la señal cambie de color.","Reflejos"],
+["memory","🧠","Memoria cósmica","Memoriza y repite secuencias.","Memoria"],
+["math","➗","Reto matemático","Resuelve operaciones contra el reloj.","Lógica"],
+["meteor","☄️","Esquiva meteoritos","Evita los objetos que caen.","Arcade"],
+["catch","🧲","Atrapa-neones","Atrapa las esferas luminosas.","Arcade"],
+["code","🔐","Código secreto","Descifra la combinación numérica.","Lógica"],
+["typing","⌨️","Teclea a toda velocidad","Escribe la palabra antes de que acabe el tiempo.","Palabras"],
+["color","🌈","Maestro del color","Identifica el color correcto.","Reflejos"],
+["higher","🃏","Mayor o menor","Predice el siguiente número.","Cartas"],
+["clicks","🖱️","Lluvia de clics","Pulsa tantas veces como puedas.","Arcade"],
+["maze","🌀","Laberinto digital","Encuentra la salida.","Aventura"],
+["whack","🐛","Caza-bichos","Atrapa los objetivos antes de que desaparezcan.","Reflejos"],
+["sequence","🔊","Eco de memoria","Repite el patrón en el orden correcto.","Memoria"],
+["mines","💣","Campo minado","Descubre casillas seguras.","Lógica"],
+["order","🔢","Orden numérico","Pulsa los números de menor a mayor.","Lógica"],
+["charge","🔋","Pulso de energía","Detén la carga en la zona objetivo.","Precisión"],
+["quiz","❓","Trivia exprés","Responde preguntas de cultura general.","Trivia"],
+["survive","🛡️","Supervivencia neón","Sobrevive esquivando amenazas.","Supervivencia"],
+["infinite","♾️","Desafío infinito","Consigue tantos puntos como puedas.","Arcade"],
+["ttt","⭕","Tres en raya","Juega contra la máquina.","Estrategia"],
+["rps","✊","Piedra, papel o tijera","Elige tu jugada contra la máquina.","Arcade"],
+["hangman","🔤","Ahorcado galáctico","Adivina la palabra letra por letra.","Palabras"],
+["guess","🎲","Adivina el número","Encuentra el número secreto.","Lógica"],
+["pattern","🧩","Mosaico oculto","Recuerda y repite el patrón.","Memoria"],
+["scramble","🔠","Palabra revuelta","Ordena las letras.","Palabras"],
+["precision","🎯","Parada perfecta","Detén el marcador en la zona ideal.","Precisión"],
+["balance","⚖️","Equilibrio digital","Mantén el indicador en la zona segura.","Habilidad"],
+["snake","🐍","Serpiente neón","Recoge puntos sin chocar.","Arcade"],
+["orbital","🪐","Defensa orbital","Intercepta las amenazas del espacio.","Acción"]
+];
+const THREE_D=[
+["race3d","🏎️","Turbo 3D: carrera","Conduce por una carretera con perspectiva y esquiva el tráfico.","Carreras",false],
+["runner3d","🏃","Corredor dimensional","Corre por tres carriles, salta y esquiva obstáculos.","Carreras",false],
+["space3d","🚀","Piloto espacial 3D","Pilota entre meteoritos y recoge energía.","Espacio",false],
+["dungeon3d","🏰","Mazmorra de cristal","Explora una mazmorra en perspectiva y encuentra la salida.","Aventura",true],
+["tower3d","🗼","Torre infinita 3D","Apila plataformas y construye una torre cada vez más alta.","Habilidad",false],
+["golf3d","⛳","Mini golf 3D","Calcula la fuerza del golpe para acercarte al hoyo.","Deportes",false],
+["bowling3d","🎳","Bolera neón 3D","Apunta y lanza la bola hacia los bolos.","Deportes",false],
+["basket3d","🏀","Canasta orbital","Ajusta el ángulo y la potencia para encestar.","Deportes",false],
+["soccer3d","⚽","Penaltis 3D","Apunta a distintas zonas de la portería.","Deportes",false],
+["ski3d","⛷️","Descenso glacial","Desciende por una pista esquivando rocas.","Deportes",false],
+["submarine3d","🌊","Submarino abisal","Navega entre minas y recoge tesoros submarinos.","Exploración",true],
+["flight3d","🛩️","Vuelo acrobático","Pilota entre anillos suspendidos en el cielo.","Vuelo",false],
+["climb3d","🧗","Escalada vertical","Sube por una pared evitando zonas inestables.","Aventura",false],
+["bridge3d","🌉","Constructor de puentes","Ajusta la longitud del puente para cruzar el vacío.","Construcción",true],
+["block3d","🧊","Puzle de cubos 3D","Gira la cámara y encuentra el cubo objetivo.","Puzles",false],
+["portal3d","🌀","Portales dimensionales","Llega a la puerta usando portales y plataformas.","Puzles",true],
+["robot3d","🤖","Arena de robots","Esquiva los ataques y golpea al robot rival.","Combate",true],
+["tank3d","🛡️","Tanque de neón","Mueve tu tanque y dispara a los objetivos.","Combate",true],
+["archery3d","🏹","Arquero de precisión","Calcula el ángulo para acertar en las dianas.","Deportes",false],
+["fishing3d","🎣","Pesca en el lago","Lanza el anzuelo y recoge peces en el momento justo.","Simulación",false],
+["farm3d","🌱","Jardín tridimensional","Recoge los cristales del jardín antes de que termine el tiempo.","Simulación",false],
+["city3d","🏙️","Explorador urbano","Recorre calles en perspectiva y encuentra los puntos de control.","Exploración",true],
+["horror3d","👻","Pasillo misterioso","Encuentra la salida de un pasillo oscuro sin perderte.","Terror suave",true],
+["rhythm3d","🎵","Ritmo holográfico","Pulsa los objetivos al ritmo de la secuencia.","Música",false],
+["drift3d","🏁","Derrape extremo","Mantén el coche en la pista mientras derrapas.","Carreras",true],
+["volcano3d","🌋","Escape del volcán","Sube por plataformas antes de que la lava te alcance.","Supervivencia",true],
+["ice3d","❄️","Laberinto helado","Deslízate por el hielo hasta llegar a la meta.","Puzles",false],
+["drones3d","🛸","Carrera de drones","Vuela entre aros flotantes en una pista aérea.","Vuelo",false],
+["crystal3d","💎","Minero de cristales","Recoge cristales evitando los peligros de la caverna.","Aventura",false],
+["boss3d","🐉","Titán tridimensional","Esquiva los proyectiles de un jefe y contraataca.","Jefes",true]
+];
+const GAMES=[
+...CLASSIC.map((x,i)=>({id:x[0],icon:x[1],name:x[2],desc:x[3],category:x[4],premium:i>=17,price:i>=17?([50,100,150,200,250,300,400][i%7]):0,three:false})),
+...THREE_D.map((x,i)=>({id:x[0],icon:x[1],name:x[2],desc:x[3],category:x[4],premium:x[5],price:x[5]?[100,150,200,250,300,400,500][i%7]:0,three:true}))
+];
+const KEY="neon_arcade_60_state_v1";
+const today=()=>new Date().toLocaleDateString("en-CA");
+function fresh(){return{coins:100,unlocked:[],played:0,best:0,score:0,history:[],lastDaily:"",missionClaimed:false,playedIds:[],lastRewardedGame:""}}
+function load(){try{let s=JSON.parse(localStorage.getItem(KEY));return s&&typeof s.coins==="number"?{...fresh(),...s}:fresh()}catch{return fresh()}}
+let state=load(),current=null,session=null,raf=0,keys={},lastTime=0,toastTimer=0;
+const canvas=$("gameCanvas"),ctx=canvas.getContext("2d");
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch{}renderStats();renderHistory()}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function toast(s){$("toastRoot").textContent=s;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$("toastRoot").textContent="",2500)}
+function addCoins(n,reason){state.coins+=n;state.history.unshift({n,reason,date:new Date().toLocaleString("es-ES")});state.history=state.history.slice(0,30);save();toast("+"+n+" monedas · "+reason)}
+function renderStats(){
+$("coinBalance").textContent=state.coins;$("playedCount").textContent=state.played;$("bestScore").textContent=state.best;
+$("unlockedCount").textContent=state.unlocked.length;$("profileCoins").textContent=state.coins;$("profilePlayed").textContent=state.played;$("profileUnlocked").textContent=state.unlocked.length;
+$("missionText").textContent=state.played>0?"1/1 partidas":"0/1 partidas";$("missionBtn").disabled=state.played===0||state.missionClaimed;
+$("dailyBtn").disabled=state.lastDaily===today();
+}
+function renderHistory(){$("history").innerHTML=state.history.length?state.history.slice(0,10).map(x=>`<div style="padding:7px;border-bottom:1px solid #30385c">${x.n>0?"+":""}${x.n} 🪙 · ${esc(x.reason)} <span class="muted">${esc(x.date)}</span></div>`).join(""):"Todavía no hay movimientos."}
+function renderGames(){
+const q=$("search").value.trim().toLowerCase(),f=$("filter").value;
+const list=GAMES.filter(g=>{
+const unlocked=!g.premium||state.unlocked.includes(g.id);
+return(!q||(g.name+" "+g.desc+" "+g.category).toLowerCase().includes(q))&&(f==="all"||(f==="free"&&!g.premium)||(f==="premium"&&g.premium)||(f==="unlocked"&&unlocked));
+});
+$("gameGrid").innerHTML=list.map(g=>{
+const unlocked=!g.premium||state.unlocked.includes(g.id);
+return `<article class="game ${g.premium&&!unlocked?"locked":""}">
+<div style="display:flex;justify-content:space-between;align-items:center"><div class="game-icon">${g.icon}</div><span class="pill ${g.premium?(unlocked?"unlocked":"premium"):""}">${g.three?"3D":g.premium?(unlocked?"DESBLOQUEADO":"PRÉMIUM"):"GRATIS"}</span></div>
+<h3>${esc(g.name)}</h3><p>${esc(g.desc)}</p><div class="game-foot"><span class="muted">${esc(g.category)}</span><button class="${g.premium&&!unlocked?"gold":"primary"}" data-open="${g.id}">${g.premium&&!unlocked?"🔒 "+g.price+" 🪙":"Jugar ▶"}</button></div></article>`;
+}).join("");
+$("gameCount").textContent="Mostrando "+list.length+" de "+GAMES.length+" juegos";
+$("gameGrid").querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>openGame(b.dataset.open));
+}
+function switchPage(p){
+["games","rewards","profile","play"].forEach(x=>$(x+"Page").classList.toggle("hidden",x!==p));
+document.querySelectorAll("[data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===p));
+if(p!=="play")stopLoop();
+}
+document.querySelectorAll("[data-page]").forEach(b=>b.onclick=()=>switchPage(b.dataset.page));
+$("search").oninput=renderGames;$("filter").onchange=renderGames;
+$("backBtn").onclick=()=>{stopLoop();switchPage("games");renderGames()};
+function modal(title,body,actions){$("modalRoot").innerHTML=`<div class="modal-back"><div class="modal"><h2>${title}</h2><p>${body}</p><div class="modal-actions">${actions}</div></div></div>`;$("modalRoot").firstChild.onclick=e=>{if(e.target.classList.contains("modal-back"))$("modalRoot").innerHTML=""}}
+function openGame(id){
+const g=GAMES.find(x=>x.id===id);if(!g)return;
+if(g.premium&&!state.unlocked.includes(id)){
+if(state.coins<g.price){modal("Te faltan monedas",`Necesitas ${g.price} monedas y tienes ${state.coins}.`, '<button onclick="$(\'modalRoot\').innerHTML=\'\'">Cerrar</button><button class="primary" id="toRewards">Recompensas</button>');$("toRewards").onclick=()=>{$("modalRoot").innerHTML="";switchPage("rewards")};return}
+modal("Desbloquear juego",`¿Desbloquear ${esc(g.name)} por ${g.price} monedas?`,'<button id="noUnlock">Cancelar</button><button class="gold" id="yesUnlock">Desbloquear</button>');
+$("noUnlock").onclick=()=>$("modalRoot").innerHTML="";
+$("yesUnlock").onclick=()=>{if(state.coins<g.price)return;$("modalRoot").innerHTML="";state.coins-=g.price;state.unlocked.push(id);state.history.unshift({n:-g.price,reason:"Desbloqueo: "+g.name,date:new Date().toLocaleString("es-ES")});save();renderGames();startGame(g)};
+return;
+}startGame(g)
+}
+function stopLoop(){if(raf)cancelAnimationFrame(raf);raf=0}
+function startGame(g){
+stopLoop();current=g;
+session={score:0,time:30,ended:false,x:0,y:0,lane:1,objects:[],target:null,round:0,phase:"ready",last:performance.now(),speed:1,health:3,coins:0,seq:[],step:0,grid:[],hits:0,angle:0,power:50,charge:0,word:"",answer:0,attempts:0,mazePos:0,visited:[],ballX:480,ballY:420,vx:0,vy:0,playerX:480,playerY:420,obstacles:[],lastSpawn:0,combo:0,life:100};
+$("playTitle").textContent=g.name;$("playType").textContent=g.three?"AVENTURA 3D":"ARCADE";
+$("playInstructions").textContent=g.desc;$("feedback").textContent="";
+$("playControls").innerHTML="";switchPage("play");
+if(g.three)start3D(g);else startClassic(g);
+}
+function control(label,fn,cls=""){const b=document.createElement("button");b.textContent=label;if(cls)b.className=cls;b.onclick=fn;$("playControls").appendChild(b);return b}
+function setFeedback(s){$("feedback").textContent=s}
+function finish(score,msg){
+if(!session||session.ended)return;session.ended=true;stopLoop();
+score=Math.max(0,Math.floor(score));session.score=score;
+setFeedback(msg+" · Puntuación: "+score);
+if(!session.counted){session.counted=true;state.played++;state.score+=score;state.best=Math.max(state.best,score);if(!state.playedIds.includes(current.id))state.playedIds.push(current.id);save();if(state.played===1&&!state.missionClaimed)toast("¡Primera partida! Reclama tu misión en Recompensas.")}
+control("↻ Volver a jugar",()=>startGame(current),"primary");control("← Catálogo",()=>{stopLoop();switchPage("games")});
+}
+function startClassic(g){
+const s=session,id=g.id;
+const area=()=>{ctx.clearRect(0,0,960,540);drawBackground()};
+function runLoop(fn){function tick(t){if(!session||session.ended)return;fn(t);raf=requestAnimationFrame(tick)}raf=requestAnimationFrame(tick)}
+function end(score,msg){finish(score,msg)}
+function targetGame(){
+s.target={x:rand(100,860),y:rand(100,440),r:27};let start=performance.now();
+canvas.onclick=e=>{if(s.ended)return;let p=pointer(e),d=Math.hypot(p.x-s.target.x,p.y-s.target.y);if(d<s.target.r+8){s.score+=10;s.target={x:rand(80,880),y:rand(80,460),r:rand(18,34)};setFeedback("Puntos: "+s.score)}};
+runLoop(t=>{area();drawTarget(s.target.x,s.target.y,s.target.r);drawText("PUNTOS "+s.score,30,45,22);if(t-start>25000)end(s.score,"¡Fin de la ronda!")});
+}
+function reaction(){
+canvas.onclick=()=>{if(s.ended)return;if(s.phase!=="go"){s.score=Math.max(0,s.score-5);setFeedback("¡Demasiado pronto!");return}let ms=performance.now()-s.goTime;s.score+=Math.max(1,Math.floor(500-ms));s.round++;setFeedback(ms+" ms");if(s.round>=5)end(s.score,"Reflejos completados");else{ s.phase="wait";s.next=performance.now()+rand(1000,2800)}};
+runLoop(t=>{area();if(s.phase==="ready"){s.phase="wait";s.next=t+rand(1200,3000)}if(s.phase==="wait"&&t>=s.next){s.phase="go";s.goTime=t}ctx.fillStyle=s.phase==="go"?"#30ffad":"#442b65";ctx.fillRect(240,150,480,240);drawText(s.phase==="go"?"¡AHORA!":"ESPERA…",480,270,48,"center");drawText("Pulsa el área cuando cambie a verde",480,430,18,"center")});
+}
+function memory(){
+let colors=["#ff4f91","#48dfff","#a77bff","#ffd166"];s.seq=[];s.step=0;s.phase="show";
+for(let i=0;i<4;i++)s.seq.push(rand(0,3));
+function showButtons(){for(let i=0;i<4;i++)control("● "+(i+1),()=>{if(s.ended||s.phase!=="input")return;if(i===s.seq[s.step]){s.step++;if(s.step===s.seq.length){s.score+=s.seq.length*20;s.seq.push(rand(0,3));s.step=0;s.phase="show";s.showAt=performance.now()+700;if(s.seq.length>9)finish(s.score,"¡Memoria perfecta!");}}else finish(s.score,"Secuencia incorrecta")})}
+showButtons();runLoop(t=>{area();drawText("MEMORIZA LA SECUENCIA",480,55,25,"center");let show=s.phase==="show";if(show&&(!s.showAt||t>=s.showAt)){s.phase="input";s.showAt=0}for(let i=0;i<4;i++){let x=250+(i%2)*240,y=140+Math.floor(i/2)*155;ctx.fillStyle=colors[i];ctx.globalAlpha=show&&s.seq[Math.min(s.step,s.seq.length-1)]===i?.95:.4;ctx.fillRect(x,y,200,120);ctx.globalAlpha=1;drawText(i+1,x+100,y+68,30,"center")}drawText("Ronda "+s.seq.length,480,500,20,"center")});
+}
+function mathGame(){
+s.answer=0;s.round=0;newQuestion();control("7",()=>answer(7));control("8",()=>answer(8));control("9",()=>answer(9));control("0",()=>answer(0));control("4",()=>answer(4));control("5",()=>answer(5));control("6",()=>answer(6));control("1",()=>answer(1));control("2",()=>answer(2));control("3",()=>answer(3));
+function newQuestion(){let a=rand(2,20),b=rand(1,12),op=rand(0,2);s.answer=op===0?a+b:op===1?a-b:a*b;s.question=`${a} ${op===0?"+":op===1?"−":"×"} ${b} = ?`}
+function answer(n){if(s.ended)return;if(n===s.answer){s.score+=20;s.round++;setFeedback("¡Correcto! "+s.score+" puntos");if(s.round>=10){end(s.score,"Reto superado");return}newQuestion()}else{setFeedback("Prueba otra vez");s.score=Math.max(0,s.score-5)}}
+runLoop(()=>{area();drawText("RESUELVE LA OPERACIÓN",480,95,25,"center");drawText(s.question,480,260,58,"center");drawText("Respuestas con los botones",480,390,18,"center");drawText("Correctas: "+s.round+"/10",480,450,20,"center")});
+}
+function typing(){
+const words=["NEBULA","GALAXIA","VECTOR","PIXEL","QUANTUM","ARCADE","ESTRELLA","TURBO","PORTAL","NEON"];s.word=words[rand(0,words.length-1)];let input=document.createElement("input");input.placeholder="Escribe la palabra";input.autocomplete="off";input.style.width="210px";$("playControls").prepend(input);control("Comprobar",()=>{if(input.value.trim().toUpperCase()===s.word){s.score+=50;s.round++;if(s.round>=5)finish(s.score,"¡Velocidad de tecleo increíble!");else{s.word=words[rand(0,words.length-1)];input.value="";setFeedback("¡Correcto! "+s.score)}}else setFeedback("No coincide, inténtalo de nuevo")},"primary");input.addEventListener("keydown",e=>{if(e.key==="Enter")$("playControls").querySelector("button.primary").click()});runLoop(()=>{area();drawText("ESCRIBE LA PALABRA",480,130,25,"center");drawText(s.word,480,260,54,"center");drawText("Palabra "+(s.round+1)+" de 5",480,350,20,"center")});input.focus();
+}
+function numberGuess(){
+s.answer=rand(1,50);let inp=document.createElement("input");inp.type="number";inp.min=1;inp.max=50;inp.placeholder="1–50";$("playControls").prepend(inp);control("Adivinar",()=>{let n=Number(inp.value);if(!n)return;s.attempts++;if(n===s.answer)finish(Math.max(20,120-s.attempts*10),"¡Número encontrado!");else setFeedback(n<s.answer?"El número es mayor":"El número es menor");if(s.attempts>=8&&!s.ended)finish(0,"Se acabaron los intentos. Era "+s.answer)},"primary");runLoop(()=>{area();drawText("ENCUENTRA EL NÚMERO SECRETO",480,140,25,"center");drawText("1 — 50",480,270,60,"center");drawText("Intentos: "+s.attempts+"/8",480,370,20,"center")});inp.focus();
+}
+function higher(){
+s.answer=rand(1,13);control("Mayor",()=>pick(1));control("Menor",()=>pick(-1));control("Igual",()=>pick(0));function pick(v){let n=rand(1,13),correct=v===Math.sign(n-s.answer);if(correct){s.score+=20;s.round++;setFeedback("¡Bien! Carta "+n);if(s.round>=8)end(s.score,"¡Ganaste la ronda!");else s.answer=n}else{end(s.score,"La siguiente carta era "+n)}}
+runLoop(()=>{area();drawText("MAYOR O MENOR",480,100,30,"center");drawText("🂠",480,260,100,"center");drawText("Carta actual: "+s.answer,480,390,24,"center");drawText("Racha: "+s.round,480,440,20,"center")});
+}
+function clicks(){let start=performance.now();canvas.onclick=e=>{if(s.ended)return;s.score++;setFeedback("Clics: "+s.score)};runLoop(t=>{area();drawText("¡HAZ CLIC!",480,180,40,"center");drawText(s.score,480,285,70,"center");let rem=Math.max(0,10-(t-start)/1000);drawText("Tiempo: "+rem.toFixed(1),480,390,25,"center");if(rem<=0)end(s.score*10,"Ronda terminada")})}
+function colorGame(){let names=["ROJO","AZUL","VERDE","AMARILLO"],colors=["#ff3f72","#3cbcff","#48e8a2","#ffd166"];s.target=rand(0,3);function next(){s.target=rand(0,3)}names.forEach((n,i)=>control(n,()=>{if(i===s.target){s.score+=10;s.round++;next();setFeedback("¡Correcto! "+s.score)}else{s.score=Math.max(0,s.score-5);setFeedback("¡Color equivocado!")};if(s.round>=12)end(s.score,"¡Reto de color terminado")}));runLoop(()=>{area();drawText("PULSA EL COLOR QUE INDICA EL TEXTO",480,90,23,"center");ctx.fillStyle=colors[s.target];drawText(names[s.target],480,260,60,"center");drawText("Aciertos: "+s.round+"/12",480,400,22,"center")})}
+function precision(){s.charge=0;s.dir=1;control("DETENER",()=>{let diff=Math.abs(s.charge-75);let pts=Math.max(0,100-Math.round(diff*2));s.score+=pts;s.round++;if(s.round>=5)end(s.score,"Precisión total");else setFeedback("Precisión: "+pts+" · Ronda "+s.round)},"primary");runLoop(t=>{s.charge+=s.dir*1.5;if(s.charge>100||s.charge<0)s.dir*=-1;area();drawText("DETÉN EL INDICADOR EN LA ZONA VERDE",480,120,23,"center");ctx.fillStyle="#29304d";ctx.fillRect(130,245,700,45);ctx.fillStyle="#3cffac";ctx.fillRect(130+700*.7,245,70,45);ctx.fillStyle="#fff";ctx.fillRect(130+700*s.charge/100-4,225,8,85);drawText(Math.round(s.charge)+"%",480,360,30,"center");drawText("Ronda "+(s.round+1)+"/5",480,410,20,"center")})}
+function ttt(){let b=Array(9).fill(""),done=false;function win(p){return [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]].some(a=>a.every(i=>b[i]===p))}function show(){area();for(let i=0;i<9;i++){let x=300+i%3*120,y=115+Math.floor(i/3)*120;ctx.fillStyle="#1b2140";ctx.fillRect(x,y,105,105);drawText(b[i]||"·",x+52,y+66,45,"center")}drawText("TÚ ERES X",480,500,20,"center")}canvas.onclick=e=>{if(done||s.ended)return;let p=pointer(e),c=Math.floor((p.x-300)/120),r=Math.floor((p.y-115)/120),i=r*3+c;if(c<0||c>2||r<0||r>2||b[i])return;b[i]="X";if(win("X")){done=true;end(100,"¡Has ganado!");return}let empty=b.map((v,j)=>v?null:j).filter(v=>v!==null);if(!empty.length){done=true;end(30,"Empate");return}b[empty[rand(0,empty.length-1)]]="O";if(win("O")){done=true;end(0,"La máquina gana")}else show()};show()}
+function rps(){["✊ Piedra","✋ Papel","✌️ Tijera"].forEach((x,i)=>control(x,()=>{let a=rand(0,2),v=(i-a+3)%3;let win=v===1,draw=i===a;s.score+=win?30:draw?10:0;s.round++;setFeedback("Máquina: "+["Piedra","Papel","Tijera"][a]+" · "+(win?"¡Ganaste!":draw?"Empate":"Perdiste"));if(s.round>=5)end(s.score,"Ronda terminada")}));runLoop(()=>{area();drawText("PIEDRA, PAPEL O TIJERA",480,160,30,"center");drawText("Elige tu jugada abajo",480,280,25,"center");drawText("Ronda "+(s.round+1)+"/5",480,390,20,"center")})}
+function maze(){let n=7;let walls=new Set([1,3,8,10,12,15,17,19,22,24,26,30,32,34,38,40,43,45]);let pos=0;function show(){area();for(let i=0;i<n*n;i++){let x=270+i%n*60,y=65+Math.floor(i/n)*60;ctx.fillStyle=i===pos?"#50eaff":i===48?"#5affaa":walls.has(i)?"#3c4260":"#171d35";ctx.fillRect(x,y,54,54);if(i===pos)drawText("●",x+27,y+36,25,"center");if(i===48)drawText("★",x+27,y+36,25,"center")}drawText("LLEGA A LA META",480,510,18,"center")}[[ "↑", -7],["←",-1],["↓",7],["→",1]].forEach(([l,d])=>control(l,()=>{let v=pos+d;if(v<0||v>=49||(d===1&&pos%7===6)||(d===-1&&pos%7===0)||walls.has(v))return;pos=v;s.score+=1;show();if(pos===48)end(150,"¡Escapaste del laberinto!") }));window.addEventListener("keydown",mazeKey);s.cleanup=()=>window.removeEventListener("keydown",mazeKey);function mazeKey(e){if(!current||current.id!=="maze"||s.ended)return;let d={"ArrowUp":-7,"w":-7,"ArrowDown":7,"s":7,"ArrowLeft":-1,"a":-1,"ArrowRight":1,"d":1}[e.key];if(d!==undefined){e.preventDefault();let v=pos+d;if(v>=0&&v<49&&!walls.has(v)&&!(d===1&&pos%7===6)&&!(d===-1&&pos%7===0)){pos=v;show();if(pos===48)end(150,"¡Escapaste!")}}}show()}
+function sequence(){s.seq=Array.from({length:4},()=>rand(1,4));s.step=0;ctx.clearRect(0,0,960,540);s.phase="show";s.showAt=performance.now()+1800;s.seq.forEach((v,i)=>control("● "+v,()=>{if(s.ended||s.phase!=="input")return;if(v===s.seq[s.step]){s.step++;if(s.step===s.seq.length){s.score+=50;s.round++;if(s.round>=4)end(s.score,"¡Secuencia dominada!");else{s.seq.push(rand(1,4));s.step=0;s.phase="show";s.showAt=performance.now()+1300}}}else end(s.score,"Secuencia incorrecta")}));runLoop(t=>{area();if(s.phase==="show"&&t>s.showAt)s.phase="input";drawText(s.phase==="show"?"MEMORIZA":"REPITE LA SECUENCIA",480,120,28,"center");drawText(s.phase==="show"?s.seq.join(" · "):"● ● ● ●",480,270,60,"center");drawText("Ronda "+(s.round+1)+"/4",480,400,20,"center")})}
+function orderGame(){let arr=[1,2,3,4,5,6,7,8,9].sort(()=>Math.random()-.5),next=1;arr.forEach(v=>control(String(v),()=>{if(v===next){s.score+=10;next++;setFeedback("Siguiente: "+next);if(next===10)end(s.score,"¡Orden perfecto!")}else{setFeedback("Busca el "+next)}}));runLoop(()=>{area();drawText("PULSA LOS NÚMEROS EN ORDEN",480,130,27,"center");drawText("Siguiente número",480,230,20,"center");drawText(next,480,315,65,"center");drawText("Progreso: "+(next-1)+"/9",480,405,22,"center")})}
+function generic(){
+if(id==="stars"||id==="whack"||id==="catch"||id==="meteor"||id==="survive"||id==="infinite"){targetGame();return}
+if(id==="reaction"){reaction();return}if(id==="memory"||id==="sequence"||id==="pattern"){memory();return}
+if(id==="math"){mathGame();return}if(id==="typing"||id==="scramble"){typing();return}if(id==="guess"||id==="code"){numberGuess();return}
+if(id==="higher"){higher();return}if(id==="clicks"){clicks();return}if(id==="color"){colorGame();return}if(id==="precision"||id==="charge"||id==="balance"){precision();return}
+if(id==="ttt"){ttt();return}if(id==="rps"){rps();return}if(id==="maze"){maze();return}if(id==="order"){orderGame();return}
+if(id==="quiz"){quiz();return}if(id==="mines"){mines();return}if(id==="hangman"){hangman();return}if(id==="snake"){snake();return}
+if(id==="scramble"){typing();return}
+targetGame();
+}
+function quiz(){let qs=[["¿Cuántos lados tiene un hexágono?",6,["5","6","8"]],["¿Planeta rojo?",1,["Venus","Marte","Júpiter"]],["¿Cuánto es 9×7?",2,["56","62","63"]],["¿Cuál es el océano más grande?",1,["Índico","Pacífico","Ártico"]],["¿Cuántos minutos tiene una hora?",1,["30","60","90"]]];let i=0;function q(){let a=qs[i];area();drawText(a[0],480,180,27,"center");a[2].forEach((x,j)=>control(x,()=>{if(j===a[1])s.score+=20;i++;if(i===qs.length)finish(s.score,"Trivia completada");else q()}))}q()}
+function mines(){let mines=new Set();while(mines.size<5)mines.add(rand(0,24));let done=new Set();for(let i=0;i<25;i++)control("□",()=>{if(s.ended||done.has(i))return;done.add(i);if(mines.has(i)){finish(s.score,"¡Has encontrado una mina!");return}s.score+=10;let b=$("playControls").children[i];if(b)b.textContent="💎";if(done.size===20)finish(s.score,"¡Campo despejado!")});runLoop(()=>{area();drawText("DESCUBRE 20 CASILLAS SEGURAS",480,180,25,"center");drawText("Seguras: "+s.score/10+"/20",480,280,30,"center")})}
+function hangman(){let words=["GALAXIA","NEBULA","PLANETA","ESTRELLA","COSMOS"],word=words[rand(0,words.length-1)];let guessed=[];function show(){area();drawText(word.split("").map(c=>guessed.includes(c)?c:"_").join(" "),480,230,45,"center");drawText("Errores: "+s.attempts+"/6",480,330,22,"center")} "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ".split("").forEach(c=>control(c,()=>{if(s.ended||guessed.includes(c))return;guessed.push(c);if(!word.includes(c))s.attempts++;if(word.split("").every(v=>guessed.includes(v)))finish(100,"¡Palabra descubierta!");else if(s.attempts>=6)finish(0,"La palabra era "+word);else show()}));show()}
+function snake(){let grid=20,cell=22;let snake=[{x:10,y:10}],dir={x:1,y:0},food={x:14,y:10},tick=0;[[ "↑",0,-1],["←",-1,0],["↓",0,1],["→",1,0]].forEach(([l,x,y])=>control(l,()=>{if(x!==-dir.x||y!==-dir.y)dir={x,y}}));window.addEventListener("keydown",snakeKey);s.cleanup=()=>window.removeEventListener("keydown",snakeKey);function snakeKey(e){if(!current||current.id!=="snake")return;let d={"ArrowUp":[0,-1],"ArrowDown":[0,1],"ArrowLeft":[-1,0],"ArrowRight":[1,0]}[e.key];if(d&&(d[0]!==-dir.x||d[1]!==-dir.y))dir={x:d[0],y:d[1]}}runLoop(t=>{if(t-tick>150){tick=t;let h={x:snake[0].x+dir.x,y:snake[0].y+dir.y};if(h.x<0||h.x>=grid||h.y<0||h.y>=grid||snake.some(p=>p.x===h.x&&p.y===h.y)){finish(s.score,"Fin de la partida");return}snake.unshift(h);if(h.x===food.x&&h.y===food.y){s.score+=10;food={x:rand(0,19),y:rand(0,19)}}else snake.pop()}area();for(let p of snake){ctx.fillStyle="#49e6ff";ctx.fillRect(260+p.x*22,40+p.y*22,19,19)}ctx.fillStyle="#ff4f91";ctx.fillRect(260+food.x*22,40+food.y*22,19,19);drawText("Puntos: "+s.score,480,520,20,"center")})}
+function startClassicGame(){generic()}
+function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function pointer(e){let r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)*canvas.width/r.width,y:(e.clientY-r.top)*canvas.height/r.height}}
+function drawBackground(){let grad=ctx.createLinearGradient(0,0,960,540);grad.addColorStop(0,"#11122b");grad.addColorStop(1,"#080b18");ctx.fillStyle=grad;ctx.fillRect(0,0,960,540);ctx.strokeStyle="#242b50";ctx.lineWidth=1;for(let x=0;x<960;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,540);ctx.stroke()}for(let y=0;y<540;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(960,y);ctx.stroke()}}
+function drawText(t,x,y,size=24,align="left"){ctx.save();ctx.font="900 "+size+"px system-ui";ctx.textAlign=align;ctx.textBaseline="middle";ctx.fillStyle="#f5f5ff";ctx.shadowColor="#7c5dff";ctx.shadowBlur=10;ctx.fillText(t,x,y);ctx.restore()}
+function drawTarget(x,y,r){ctx.save();ctx.shadowBlur=20;ctx.shadowColor="#52dfff";ctx.fillStyle="#52dfff";ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();ctx.fillStyle="#11152a";ctx.beginPath();ctx.arc(x,y,r*.55,0,Math.PI*2);ctx.fill();ctx.fillStyle="#ff5fbd";ctx.beginPath();ctx.arc(x,y,r*.22,0,Math.PI*2);ctx.fill();ctx.restore()}
+function start3D(g){
+const s=session,id=g.id;
+s.playerX=0;s.lane=0;s.objects=[];s.time=45;s.speed=1;s.score=0;s.life=100;s.lastSpawn=0;s.round=0;s.angle=0;s.power=50;
+$("playControls").innerHTML="";
+control("◀ Izquierda",()=>move(-1));control("▲ Saltar / acelerar",()=>jump());control("Derecha ▶",()=>move(1));
+control("Acción / lanzar",()=>action(),"primary");
+control("Reiniciar",()=>startGame(current));
+canvas.onclick=e=>{if(s.ended)return;let p=pointer(e);if(p.x<canvas.width*.36)move(-1);else if(p.x>canvas.width*.64)move(1);else action()};
+function move(d){if(s.ended)return;s.lane=Math.max(-1,Math.min(1,s.lane+d));s.playerX=s.lane}
+function jump(){if(s.ended)return;s.jumpingUntil=performance.now()+750;s.score+=1}
+function action(){
+if(s.ended)return;
+if(["golf3d","bowling3d","basket3d","soccer3d","archery3d","bridge3d","tower3d"].includes(id)){s.power=rand(35,100);s.objects.push({lane:s.lane,z:0,power:s.power});}
+else{s.score+=2;s.objects.push({lane:s.lane,z:0,good:true})}
+}
+function spawn(t){
+if(t-s.lastSpawn<750/s.speed)return;s.lastSpawn=t;
+let lane=rand(-1,1),good=Math.random()<.48;
+s.objects.push({lane,z:1,good,type:rand(0,2)});
+}
+function tick(t){
+if(!session||session.ended||current!==g)return;
+let dt=Math.min(40,t-s.last);s.last=t;
+if(!s.startedAt)s.startedAt=t;
+let elapsed=(t-s.startedAt)/1000;s.time=Math.max(0,45-elapsed);
+if(["race3d","runner3d","drift3d","ski3d","drones3d","flight3d","space3d","submarine3d","crystal3d","farm3d","city3d","climb3d","volcano3d","ice3d","horror3d","dungeon3d","portal3d","boss3d","robot3d","tank3d","archery3d","soccer3d","basket3d","golf3d","bowling3d"].includes(id))spawn(t);
+let speed=(id==="runner3d"||id==="race3d"||id==="drift3d"||id==="ski3d")?1.15:0.8;
+for(let o of s.objects)o.z-=dt/1000*speed*s.speed;
+for(let i=s.objects.length-1;i>=0;i--){let o=s.objects[i];if(o.z<.12){if(Math.abs(o.lane-s.lane)<.5){if(o.good||o.power){s.score+=o.power?Math.max(5,Math.round(o.power)):10;s.life=Math.min(100,s.life+2)}else if(performance.now()>(s.jumpingUntil||0)){s.life-=12;setFeedback("¡Cuidado! Energía "+s.life)}}s.objects.splice(i,1)}}
+if(["robot3d","tank3d","boss3d"].includes(id)&&Math.random()<.02)s.life-=2;
+if(["golf3d","bowling3d","basket3d","soccer3d","archery3d","bridge3d","tower3d","fishing3d","rhythm3d"].includes(id)){s.objects=s.objects.filter(o=>o.z>-.1);if(t-s.lastSpawn>1800&&s.round<8){s.lastSpawn=t;s.round++;s.objects.push({lane:rand(-1,1),z:0,power:rand(25,100),good:true})}}
+draw3D(g,t);
+if(s.life<=0){finish(s.score,"Energía agotada");return}
+if(s.time<=0||elapsed>=45){finish(s.score,"¡Desafío completado!");return}
+raf=requestAnimationFrame(tick)
+}
+raf=requestAnimationFrame(tick);
+}
+function draw3D(g,t){
+const s=session,id=g.id;ctx.clearRect(0,0,960,540);
+let grad=ctx.createLinearGradient(0,0,0,540);grad.addColorStop(0,"#10122e");grad.addColorStop(.6,"#111a36");grad.addColorStop(1,"#070914");ctx.fillStyle=grad;ctx.fillRect(0,0,960,540);
+for(let i=0;i<60;i++){let x=(i*157)%960,y=(i*83)%300;ctx.fillStyle=i%3===0?"#a879ff":"#55dcff";ctx.globalAlpha=.3+(i%5)/10;ctx.fillRect(x,y,2,2)}ctx.globalAlpha=1;
+let horizon=150;
+ctx.fillStyle="#12152e";ctx.beginPath();ctx.moveTo(0,horizon);ctx.lineTo(960,horizon);ctx.lineTo(960,540);ctx.lineTo(0,540);ctx.closePath();ctx.fill();
+ctx.strokeStyle="#4d4fff";ctx.lineWidth=2;ctx.shadowColor="#755bff";ctx.shadowBlur=8;
+for(let i=-8;i<=8;i++){let bx=480+i*110;ctx.beginPath();ctx.moveTo(480+(bx-480)*.08,horizon);ctx.lineTo(bx,540);ctx.stroke()}
+for(let j=0;j<14;j++){let z=((j/14+(t/1300)%1)%1),y=horizon+z*z*390;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(960,y);ctx.stroke()}
+ctx.shadowBlur=0;
+for(let o of s.objects){let z=Math.max(.05,Math.min(1,o.z)),y=horizon+(1-z)*(1-z)*330+30,size=15+(1-z)*55,x=480+o.lane*(65+(1-z)*210);ctx.save();ctx.translate(x,y);ctx.scale(size/35,size/35);drawCube(o.good?"#4eeaff":o.power?"#ffd166":"#ff477d");ctx.restore()}
+let px=480+s.lane*180,py=420;
+if(t<(s.jumpingUntil||0))py=365;
+ctx.save();ctx.translate(px,py);drawPlayer3D();ctx.restore();
+ctx.fillStyle="#0b1024cc";ctx.fillRect(18,18,260,88);drawText(g.name,32,43,17);drawText("Puntos: "+s.score,32,73,20);
+ctx.fillStyle="#202844";ctx.fillRect(700,28,220,15);ctx.fillStyle="#53edff";ctx.fillRect(700,28,220*Math.max(0,s.time/45),15);drawText("TIEMPO "+Math.ceil(s.time)+"s",810,68,18,"center");
+ctx.fillStyle="#202844";ctx.fillRect(700,86,220,12);ctx.fillStyle="#6dffb3";ctx.fillRect(700,86,220*s.life/100,12);drawText("ENERGÍA",700,115,13);
+drawText("◀ ▶ CAMBIAR CARRIL · ACCIÓN PARA INTERACTUAR",480,515,16,"center");
+}
+function drawCube(color){ctx.fillStyle=color;ctx.strokeStyle="#ffffff";ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(-25,-25);ctx.lineTo(10,-35);ctx.lineTo(35,-15);ctx.lineTo(0,-5);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(-25,-25);ctx.lineTo(0,-5);ctx.lineTo(0,30);ctx.lineTo(-25,10);ctx.closePath();ctx.fill();ctx.stroke();ctx.beginPath();ctx.moveTo(0,-5);ctx.lineTo(35,-15);ctx.lineTo(35,20);ctx.lineTo(0,30);ctx.closePath();ctx.fill();ctx.stroke()}
+function drawPlayer3D(){ctx.shadowBlur=20;ctx.shadowColor="#52dfff";ctx.fillStyle="#52dfff";ctx.beginPath();ctx.moveTo(0,-42);ctx.lineTo(27,15);ctx.lineTo(0,7);ctx.lineTo(-27,15);ctx.closePath();ctx.fill();ctx.fillStyle="#b38cff";ctx.fillRect(-9,5,18,24);ctx.shadowBlur=0}
+function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function quizPlaceholder(){}
+function answer(){}
+function unused(){}
+function genericGame(){startClassic(current)}
+function launchClassic(g){
+const id=g.id,s=session;
+if(id==="stars"||id==="whack"||id==="catch"||id==="meteor"||id==="survive"||id==="infinite"){let start=performance.now();s.target={x:rand(80,880),y:rand(80,460),r:28};canvas.onclick=e=>{if(s.ended)return;let p=pointer(e);if(Math.hypot(p.x-s.target.x,p.y-s.target.y)<s.target.r+10){s.score+=10;s.target={x:rand(80,880),y:rand(80,460),r:rand(18,35)}}};runCanvas(t=>{drawBackground();drawText("PULSA LOS OBJETIVOS",480,50,22,"center");drawTarget(s.target.x,s.target.y,s.target.r);drawText("Puntos: "+s.score,30,50);drawText("Tiempo: "+Math.max(0,Math.ceil(25-(t-start)/1000)),30,90);if(t-start>25000)finish(s.score,"Ronda terminada")});return}
+if(id==="reaction"){let start=performance.now();s.phase="wait";s.next=start+rand(1000,3000);canvas.onclick=()=>{if(s.ended)return;if(s.phase==="go"){s.score+=Math.max(1,500-(performance.now()-s.goTime));s.round++;if(s.round>=5)finish(s.score,"¡Reflejos excelentes!");else{s.phase="wait";s.next=performance.now()+rand(1000,2500)}}else s.score=Math.max(0,s.score-10)};runCanvas(t=>{drawBackground();if(s.phase==="wait"&&t>s.next){s.phase="go";s.goTime=t}ctx.fillStyle=s.phase==="go"?"#25ee9b":"#4b286c";ctx.fillRect(250,150,460,240);drawText(s.phase==="go"?"¡PULSA!":"ESPERA",480,270,45,"center");drawText("Ronda "+(s.round+1)+"/5",480,450,20,"center")});return}
+if(id==="math"){let newQ=()=>{let a=rand(2,20),b=rand(1,12),op=rand(0,2);s.answer=op===0?a+b:op===1?a-b:a*b;s.question=`${a} ${op===0?"+":op===1?"−":"×"} ${b} = ?`};newQ();[0,1,2,3,4,5,6,7,8,9].forEach(n=>control(n,()=>{if(Number(n)===s.answer){s.score+=20;s.round++;if(s.round>=10)finish(s.score,"¡Reto superado!");else newQ()}else s.score=Math.max(0,s.score-5)}));runCanvas(()=>{drawBackground();drawText("RESUELVE LA OPERACIÓN",480,120,25,"center");drawText(s.question,480,260,55,"center");drawText("Puntos: "+s.score,480,390,22,"center")});return}
+if(id==="typing"||id==="scramble"){let words=["NEBULA","GALAXIA","VECTOR","PIXEL","QUANTUM","ARCADE","ESTRELLA","TURBO"];s.word=words[rand(0,words.length-1)];let inp=document.createElement("input");inp.placeholder="Escribe aquí";$("playControls").prepend(inp);control("Comprobar",()=>{if(inp.value.trim().toUpperCase()===s.word){s.score+=50;s.round++;if(s.round>=5)finish(s.score,"¡Excelente!");else{s.word=words[rand(0,words.length-1)];inp.value=""}}else setFeedback("Inténtalo de nuevo")},"primary");runCanvas(()=>{drawBackground();drawText("ESCRIBE LA PALABRA",480,130,25,"center");drawText(s.word,480,260,50,"center");drawText("Ronda "+(s.round+1)+"/5",480,360,22,"center")});return}
+if(id==="guess"||id==="code"){s.answer=rand(1,50);let inp=document.createElement("input");inp.type="number";inp.placeholder="1–50";$("playControls").prepend(inp);control("Adivinar",()=>{let n=Number(inp.value);s.round++;if(n===s.answer)finish(120,"¡Lo encontraste!");else if(s.round>=8)finish(0,"Era "+s.answer);else setFeedback(n<s.answer?"Es mayor":"Es menor")});runCanvas(()=>{drawBackground();drawText("ADIVINA EL NÚMERO",480,150,30,"center");drawText("1 — 50",480,270,60,"center");drawText("Intento "+(s.round+1)+"/8",480,370,22,"center")});return}
+if(id==="higher"){s.answer=rand(1,13);["Mayor","Menor","Igual"].forEach((x,i)=>control(x,()=>{let n=rand(1,13),ok=i===Math.sign(n-s.answer)+1;if(ok){s.score+=20;s.round++;s.answer=n;if(s.round>=8)finish(s.score,"¡Ganaste!");else setFeedback("Correcto: "+n)}else finish(s.score,"Salió "+n)}));runCanvas(()=>{drawBackground();drawText("MAYOR O MENOR",480,150,30,"center");drawText("🂠",480,260,90,"center");drawText("Carta: "+s.answer,480,390,24,"center")});return}
+if(id==="clicks"){let start=performance.now();canvas.onclick=()=>{if(!s.ended)s.score++};runCanvas(t=>{drawBackground();drawText("¡HAZ CLIC!",480,180,40,"center");drawText(s.score,480,280,70,"center");let rem=10-(t-start)/1000;drawText("Tiempo: "+Math.max(0,rem).toFixed(1),480,390,25,"center");if(rem<=0)finish(s.score*10,"¡Ronda terminada!")});return}
+if(id==="color"){let colors=["ROJO","AZUL","VERDE","AMARILLO"],c=["#ff3f72","#3cbcff","#48e8a2","#ffd166"];s.answer=rand(0,3);colors.forEach((x,i)=>control(x,()=>{if(i===s.answer){s.score+=10;s.round++;s.answer=rand(0,3)}else s.score=Math.max(0,s.score-5);if(s.round>=12)finish(s.score,"Reto completado")}));runCanvas(()=>{drawBackground();drawText(colors[s.answer],480,240,55,"center");ctx.fillStyle=c[s.answer];ctx.fillRect(440,290,80,50);drawText("Aciertos: "+s.round+"/12",480,400,22,"center")});return}
+if(id==="precision"||id==="charge"||id==="balance"){s.charge=0;s.dir=1;control("DETENER",()=>{let pts=Math.max(0,100-Math.abs(s.charge-75)*2);s.score+=Math.round(pts);s.round++;if(s.round>=5)finish(s.score,"¡Precisión completada")});runCanvas(()=>{s.charge+=s.dir*1.3;if(s.charge>100||s.charge<0)s.dir*=-1;drawBackground();drawText("DETÉN EL INDICADOR EN VERDE",480,140,24,"center");ctx.fillStyle="#242b4a";ctx.fillRect(130,245,700,40);ctx.fillStyle="#3cffac";ctx.fillRect(620,245,70,40);ctx.fillStyle="#fff";ctx.fillRect(130+7*s.charge-4,225,8,80);drawText(Math.round(s.charge)+"%",480,350,30,"center")});return}
+if(id==="ttt"){let b=Array(9).fill(""),done=false;function show(){drawBackground();for(let i=0;i<9;i++){let x=300+i%3*120,y=100+Math.floor(i/3)*120;ctx.fillStyle="#1b2140";ctx.fillRect(x,y,105,105);drawText(b[i]||"·",x+52,y+60,42,"center")}}function win(p){return [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]].some(a=>a.every(i=>b[i]===p))}canvas.onclick=e=>{if(done||s.ended)return;let p=pointer(e),c=Math.floor((p.x-300)/120),r=Math.floor((p.y-100)/120),i=r*3+c;if(c<0||c>2||r<0||r>2||b[i])return;b[i]="X";if(win("X")){done=true;finish(100,"¡Has ganado!");return}let empty=b.map((v,j)=>v?null:j).filter(v=>v!==null);if(!empty.length){done=true;finish(30,"Empate");return}b[empty[rand(0,empty.length-1)]]="O";if(win("O")){done=true;finish(0,"La máquina gana")}show()};show();return}
+if(id==="rps"){["✊ Piedra","✋ Papel","✌️ Tijera"].forEach((x,i)=>control(x,()=>{let a=rand(0,2),d=(i-a+3)%3,win=d===1;s.score+=win?30:i===a?10:0;s.round++;setFeedback("Máquina: "+["Piedra","Papel","Tijera"][a]);if(s.round>=5)finish(s.score,"Partida terminada")}));runCanvas(()=>{drawBackground();drawText("PIEDRA, PAPEL O TIJERA",480,170,30,"center");drawText("Elige abajo",480,280,25,"center");drawText("Ronda "+(s.round+1)+"/5",480,400,20,"center")});return}
+if(id==="order"){let arr=[1,2,3,4,5,6,7,8,9].sort(()=>Math.random()-.5),next=1;arr.forEach(v=>control(v,()=>{if(v===next){s.score+=10;next++;if(next===10)finish(s.score,"¡Orden perfecto!")}else setFeedback("Busca el "+next)}));runCanvas(()=>{drawBackground();drawText("ORDENA LOS NÚMEROS",480,160,27,"center");drawText("Siguiente: "+next,480,270,40,"center")});return}
+if(id==="quiz"){let qs=[["¿Cuántos lados tiene un hexágono?",6,["5","6","8"]],["¿Planeta rojo?",1,["Venus","Marte","Júpiter"]],["¿Cuánto es 9×7?",2,["56","62","63"]],["¿Océano más grande?",1,["Índico","Pacífico","Ártico"]],["¿Minutos en una hora?",1,["30","60","90"]]];let i=0;function q(){if(i>=qs.length){finish(s.score,"Trivia completada");return}let a=qs[i];$("playControls").innerHTML="";a[2].forEach((v,j)=>control(v,()=>{if(j===a[1])s.score+=20;i++;q()}));setFeedback(a[0])}q();runCanvas(()=>{drawBackground();drawText("TRIVIA EXPRÉS",480,170,30,"center");drawText("Responde con los botones",480,270,23,"center");drawText("Puntos: "+s.score,480,370,20,"center")});return}
+if(id==="hangman"){let word=["GALAXIA","NEBULA","PLANETA","COSMOS"][rand(0,3)],guessed=[];function show(){drawBackground();drawText(word.split("").map(c=>guessed.includes(c)?c:"_").join(" "),480,230,42,"center");drawText("Errores: "+s.attempts+"/6",480,330,22,"center")} "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ".split("").forEach(c=>control(c,()=>{if(s.ended||guessed.includes(c))return;guessed.push(c);if(!word.includes(c))s.attempts++;if(word.split("").every(v=>guessed.includes(v)))finish(100,"¡Palabra descubierta!");else if(s.attempts>=6)finish(0,"La palabra era "+word);else show()}));show();return}
+if(id==="maze"){let pos=0,walls=new Set([1,3,8,10,12,15,17,19,22,24,26,30,32,34,38,40,43,45]);function show(){drawBackground();for(let i=0;i<49;i++){let x=270+i%7*60,y=45+Math.floor(i/7)*60;ctx.fillStyle=i===pos?"#50eaff":i===48?"#5affaa":walls.has(i)?"#3c4260":"#171d35";ctx.fillRect(x,y,54,54);if(i===48)drawText("★",x+27,y+30,22,"center")}drawText("LLEGA A LA META",480,500,18,"center")}[[ "↑",-7],["←",-1],["↓",7],["→",1]].forEach(([l,d])=>control(l,()=>{let v=pos+d;if(v<0||v>=49||walls.has(v)||(d===1&&pos%7===6)||(d===-1&&pos%7===0))return;pos=v;show();if(pos===48)finish(150,"¡Escapaste!")}));show();return}
+if(id==="snake"){let body=[{x:10,y:10}],dir={x:1,y:0},food={x:14,y:10},tick=0;[[ "↑",0,-1],["←",-1,0],["↓",0,1],["→",1,0]].forEach(([l,x,y])=>control(l,()=>{if(x!==-dir.x||y!==-dir.y)dir={x,y}}));window.addEventListener("keydown",snakeKey);s.cleanup=()=>window.removeEventListener("keydown",snakeKey);function snakeKey(e){if(!current||current.id!=="snake")return;let d={"ArrowUp":[0,-1],"ArrowDown":[0,1],"ArrowLeft":[-1,0],"ArrowRight":[1,0]}[e.key];if(d&&(d[0]!==-dir.x||d[1]!==-dir.y))dir={x:d[0],y:d[1]}}runCanvas(t=>{if(t-tick>150){tick=t;let h={x:body[0].x+dir.x,y:body[0].y+dir.y};if(h.x<0||h.x>=20||h.y<0||h.y>=20||body.some(p=>p.x===h.x&&p.y===h.y)){finish(s.score,"Fin de la partida");return}body.unshift(h);if(h.x===food.x&&h.y===food.y){s.score+=10;food={x:rand(0,19),y:rand(0,19)}}else body.pop()}drawBackground();body.forEach(p=>{ctx.fillStyle="#49e6ff";ctx.fillRect(260+p.x*22,40+p.y*22,19,19)});ctx.fillStyle="#ff4f91";ctx.fillRect(260+food.x*22,40+food.y*22,19,19);drawText("Puntos: "+s.score,30,30)});return}
+if(id==="mines"){let mines=new Set();while(mines.size<5)mines.add(rand(0,24));let done=new Set();for(let i=0;i<25;i++)control("□",e=>{if(s.ended||done.has(i))return;done.add(i);if(mines.has(i)){finish(s.score,"¡Mina encontrada!");return}s.score+=10;e.target.textContent="💎";if(done.size>=20)finish(s.score,"¡Campo despejado!")});runCanvas(()=>{drawBackground();drawText("ENCUENTRA CASILLAS SEGURAS",480,180,25,"center");drawText("Seguras: "+s.score/10+"/20",480,280,30,"center")});return}
+if(id==="sequence"||id==="memory"||id==="pattern"){s.seq=Array.from({length:4},()=>rand(1,4));s.step=0;s.phase="show";s.showAt=performance.now()+1800;s.seq.forEach(v=>control("● "+v,()=>{if(s.ended||s.phase!=="input")return;if(v===s.seq[s.step]){s.step++;if(s.step===s.seq.length){s.score+=50;s.round++;if(s.round>=4)finish(s.score,"¡Secuencia dominada!");else{s.seq.push(rand(1,4));s.step=0;s.phase="show";s.showAt=performance.now()+1300}}}else finish(s.score,"Secuencia incorrecta")}));runCanvas(t=>{if(s.phase==="show"&&t>s.showAt)s.phase="input";drawBackground();drawText(s.phase==="show"?"MEMORIZA":"REPITE LA SECUENCIA",480,120,28,"center");drawText(s.phase==="show"?s.seq.join(" · "):"● ● ● ●",480,270,60,"center");drawText("Ronda "+(s.round+1)+"/4",480,400,20,"center")});return}
+runCanvas(()=>{drawBackground();drawText(g.name,480,160,35,"center");drawText("Pulsa el objetivo para sumar puntos",480,240,22,"center");drawText("Puntos: "+s.score,480,340,25,"center")});canvas.onclick=()=>{if(!s.ended){s.score+=10;setFeedback("Puntos: "+s.score)}};
+}
+function runCanvas(fn){function tick(t){if(!session||session.ended)return;fn(t);if(!session.ended)raf=requestAnimationFrame(tick)}raf=requestAnimationFrame(tick)}
+function startClassic(g){launchClassic(g)}
+window.addEventListener("keydown",e=>{if(e.key==="Escape"&&current){stopLoop();switchPage("games")}});
+$("dailyBtn").onclick=()=>{if(state.lastDaily===today())return;state.lastDaily=today();addCoins(50,"Regalo diario");renderStats()};
+$("videoBtn").onclick=()=>{modal("Recompensa de prueba","Esta simulación no reproduce anuncios reales. ¿Quieres recibir 30 monedas de demostración?",'<button id="cancelReward">Cancelar</button><button class="gold" id="claimReward">Recibir monedas</button>');$("cancelReward").onclick=()=>$("modalRoot").innerHTML="";$("claimReward").onclick=()=>{$("modalRoot").innerHTML="";addCoins(30,"Recompensa de vídeo de prueba")}};
+$("missionBtn").onclick=()=>{if(state.played<1||state.missionClaimed)return;state.missionClaimed=true;addCoins(20,"Misión: primera partida");renderStats()};
+$("resetBtn").onclick=()=>modal("¿Restablecer progreso?","Se borrarán las monedas, récords y desbloqueos guardados en este navegador.",'<button id="cancelReset">Cancelar</button><button class="gold" id="confirmReset">Restablecer</button>');
+$("modalRoot").addEventListener("click",e=>{if(e.target.id==="cancelReset")$("modalRoot").innerHTML="";if(e.target.id==="confirmReset"){state=fresh();save();renderGames();$("modalRoot").innerHTML="";switchPage("games");toast("Progreso restablecido")}});
+renderStats();renderHistory();renderGames();
+</script>
+</body>
+</html>
