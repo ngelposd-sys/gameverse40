@@ -3,193 +3,388 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NEON ARCADE</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090716">
+<title>NEON ARCADE 2.0</title>
 <style>
+:root{--bg:#090716;--panel:#15112a;--purple:#a855f7;--blue:#38bdf8;--text:#f5f3ff;--muted:#aaa3c7;--green:#4ade80;--red:#fb7185}
 *{box-sizing:border-box}
-body{margin:0;background:#090d1d;color:#f4f7ff;font-family:Arial,sans-serif}
-header{text-align:center;padding:24px;background:#121a31;border-bottom:2px solid #8b5cf6}
-h1{font-size:36px;margin:0}h1 span{color:#38bdf8}
-main{max-width:1000px;margin:auto;padding:18px}
-.panel,.game{background:#121a31;border:1px solid #34436b;border-radius:14px;padding:16px;margin-bottom:14px}
-.stats{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:14px}
-.stats strong{color:#facc15}
-#catalog{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
-.game{margin:0;display:flex;flex-direction:column;gap:10px}
-.game h3{margin:0}.game p{color:#b6c2df;line-height:1.5;flex:1}
-button{border:0;border-radius:9px;padding:12px;background:linear-gradient(110deg,#9333ea,#2563eb);color:white;font-weight:bold;cursor:pointer}
-button:disabled{opacity:.5}
-#play{display:none;text-align:center}
-#board{display:block;width:100%;max-width:600px;margin:15px auto;background:#070b17;border-radius:10px;touch-action:manipulation}
-#message{color:#38bdf8;min-height:28px}
-.controls{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
-small{color:#b6c2df}
+body{margin:0;background:radial-gradient(ellipse at top,#211044 0,#090716 60%);color:var(--text);font-family:system-ui,Arial,sans-serif;min-height:100vh}
+header{padding:20px 5%;border-bottom:1px solid #39245e;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:#090716cc;position:sticky;top:0;z-index:5;backdrop-filter:blur(12px)}
+.logo{font-size:clamp(22px,4vw,34px);font-weight:1000;letter-spacing:2px;color:#d8b4fe;text-shadow:0 0 18px #a855f7}
+.coins{background:#241744;border:1px solid #8b5cf6;padding:10px 15px;border-radius:14px;font-weight:bold;color:#fde68a}
+main{max-width:1200px;margin:auto;padding:22px 16px 60px}
+.hero{padding:26px 10px 18px}
+h1{font-size:clamp(28px,5vw,46px);margin:0 0 10px}
+p{color:var(--muted);line-height:1.6}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin:15px 0 22px}
+button,select,input{font:inherit}
+button{cursor:pointer;border:1px solid #59417f;background:#24163e;color:white;border-radius:11px;padding:10px 14px;transition:.15s}
+button:hover{border-color:var(--blue);transform:translateY(-1px);box-shadow:0 0 12px #38bdf833}
+button.primary{background:linear-gradient(110deg,#7c3aed,#2563eb);border:0;font-weight:800}
+button:disabled{opacity:.45;cursor:not-allowed;transform:none}
+nav button.active{background:#7c3aed;border-color:#c4b5fd}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;margin:20px 0}
+.stat,.panel,.game-card{background:#15112a;border:1px solid #38275b;border-radius:16px;padding:16px}
+.stat strong{display:block;font-size:25px;color:#c4b5fd}
+.stat span{color:var(--muted);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:13px}
+.game-card{display:flex;flex-direction:column;gap:9px;min-height:205px}
+.game-card .emoji{font-size:35px}
+.game-card h3{margin:0;font-size:18px}
+.game-card p{font-size:13px;margin:0;flex:1}
+.game-card .meta{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.tag{padding:4px 8px;border-radius:7px;background:#2b1e47}
+.tag.premium{color:#fde68a}
+.hidden{display:none!important}
+#gameScreen{margin-top:15px}
+.game-head{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+#playArea{min-height:270px;margin-top:16px;padding:18px;border-radius:15px;background:#0c0a1b;border:1px solid #39245e;text-align:center}
+.big{font-size:clamp(27px,6vw,48px);font-weight:900;margin:18px 0}
+.controls{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin:15px 0}
+.message{min-height:28px;color:#c4b5fd;margin:12px}
+.board{display:grid;gap:7px;max-width:430px;margin:18px auto}
+.tile{min-height:58px;font-size:21px;font-weight:800;padding:8px}
+.tile.good{background:#166534}.tile.bad{background:#9f1239}
+input,select{background:#0c0a1b;color:white;border:1px solid #59417f;border-radius:9px;padding:10px;max-width:100%}
+#notice{position:fixed;bottom:15px;left:50%;transform:translateX(-50%);background:#241744;border:1px solid #8b5cf6;border-radius:12px;padding:12px 18px;z-index:10;display:none;max-width:90%;text-align:center}
+footer{text-align:center;color:#82789f;padding:30px 10px;font-size:12px}
 </style>
 </head>
 <body>
 <header>
-<h1>NEON <span>ARCADE</span></h1>
-<p>Tu universo de minijuegos</p>
-<div class="stats">
-<div>🪙 Monedas: <strong id="coins">500</strong></div>
-<div>🎮 Juegos: <strong>8</strong></div>
-<div>🔓 Premium: <strong id="owned">0</strong></div>
-</div>
+  <div class="logo">✦ NEON ARCADE <small style="font-size:12px">2.0</small></div>
+  <div class="coins">🪙 <span id="coinCount">500</span> monedas</div>
 </header>
 <main>
-<section class="panel">
-<h2>🎁 Recompensas</h2>
-<button id="daily">Recompensa diaria +100</button>
-<button id="reward">Simular vídeo +25</button>
-<p><small>La recompensa de vídeo es una demostración. Para anuncios reales necesitarás integrar una plataforma publicitaria.</small></p>
+<section class="hero">
+  <h1>Tu universo de juegos.</h1>
+  <p>20 minijuegos, desafíos, récords y recompensas. ¡Entra, juega y supera tu mejor marca!</p>
+  <div class="stats">
+    <div class="stat"><strong id="playedStat">0</strong><span>Partidas terminadas</span></div>
+    <div class="stat"><strong id="recordStat">0</strong><span>Récord personal</span></div>
+    <div class="stat"><strong id="unlockedStat">10/20</strong><span>Juegos desbloqueados</span></div>
+  </div>
+  <div class="controls">
+    <button class="primary" onclick="dailyReward()">🎁 Recompensa diaria</button>
+    <button onclick="demoVideo()">▶ Ver vídeo de prueba (+25)</button>
+    <button onclick="openShop()">🛒 Tienda de monedas</button>
+  </div>
 </section>
-<section id="catalogSection">
-<h2>Elige tu juego</h2>
-<div id="catalog"></div>
+
+<nav>
+  <button class="active" onclick="showTab('all',this)">Todos</button>
+  <button onclick="showTab('free',this)">Gratis</button>
+  <button onclick="showTab('premium',this)">🔒 Prémium</button>
+  <button onclick="showTab('shop',this)">🛒 Tienda</button>
+</nav>
+
+<section id="catalog">
+  <div class="grid" id="gameGrid"></div>
 </section>
-<section id="play" class="panel">
-<h2 id="title"></h2>
-<p id="instructions"></p>
-<canvas id="board" width="600" height="340"></canvas>
-<div id="message"></div>
-<div id="controls" class="controls"></div>
-<p><button id="back">← Volver al catálogo</button></p>
+
+<section id="shop" class="panel hidden">
+  <h2>🛒 Tienda de NEON</h2>
+  <p>Usa tus monedas para desbloquear juegos prémium. Los paquetes de monedas de pago todavía no están conectados.</p>
+  <div class="grid" id="shopGrid"></div>
 </section>
+
+<section id="gameScreen" class="panel hidden">
+  <div class="game-head">
+    <div><h2 id="gameTitle" style="margin:0">Juego</h2><p id="gameDescription" style="margin:4px 0"></p></div>
+    <button onclick="backToCatalog()">✕ Volver</button>
+  </div>
+  <div class="game-head"><span>⏱️ Tiempo: <b id="timer">—</b></span><span>⭐ Puntos: <b id="score">0</b></span><span>🏆 Récord: <b id="gameRecord">0</b></span></div>
+  <div id="playArea"></div>
+  <div class="message" id="gameMessage">Pulsa comenzar para jugar.</div>
+</section>
+
+<footer>NEON ARCADE 2.0 · Progreso guardado en este navegador · Las recompensas de vídeo son demostrativas.</footer>
 </main>
+<div id="notice"></div>
+
 <script>
 const games=[
-{id:1,n:"Lluvia de meteoritos",e:"🚀",p:0,d:"Esquiva los meteoritos y sobrevive.",t:"Mueve la nave a izquierda y derecha. Sobrevive 20 segundos."},
-{id:2,n:"Cazador de estrellas",e:"⭐",p:0,d:"Atrapa estrellas antes de que desaparezcan.",t:"Pulsa el objetivo tantas veces como puedas en 15 segundos."},
-{id:3,n:"Memoria cósmica",e:"🧠",p:0,d:"Encuentra parejas de símbolos.",t:"Descubre las ocho parejas con el menor número de intentos."},
-{id:4,n:"Jardín de píxeles",e:"🌱",p:0,d:"Cultiva tu propio jardín.",t:"Pulsa las parcelas para plantar, regar y cosechar ocho plantas."},
-{id:5,n:"Duelo de reflejos",e:"⚡",p:0,d:"Pon a prueba tus reflejos.",t:"Espera a la señal verde y pulsa lo más rápido posible."},
-{id:6,n:"Explorador espacial",e:"🪐",p:100,d:"Recoge energía evitando zonas peligrosas.",t:"Muévete con las flechas y recoge cinco orbes azules."},
-{id:7,n:"La cámara cifrada",e:"🔐",p:150,d:"Descifra el código secreto.",t:"Adivina una combinación de tres cifras distintas."},
-{id:8,n:"Carrera de mareas",e:"🌊",p:200,d:"Corre entre obstáculos y recoge perlas.",t:"Cambia de carril y recoge tres perlas."}
+{id:1,name:"Cazador de estrellas",emoji:"🌟",type:"target",desc:"Pulsa el objetivo tantas veces como puedas.",free:true},
+{id:2,name:"Duelo de reflejos",emoji:"⚡",type:"reaction",desc:"Espera la señal verde y reacciona rápido.",free:true},
+{id:3,name:"Memoria cósmica",emoji:"🧠",type:"pairs",desc:"Encuentra todas las parejas de símbolos.",free:true},
+{id:4,name:"Reto matemático",emoji:"➗",type:"math",desc:"Resuelve operaciones antes de que termine el tiempo.",free:true},
+{id:5,name:"Esquiva meteoritos",emoji:"☄️",type:"dodge",desc:"Encuentra el hueco entre los meteoritos.",free:true},
+{id:6,name:"Atrapa-neones",emoji:"🧲",type:"catch",desc:"Atrapa los objetos correctos y evita las trampas.",free:true},
+{id:7,name:"Código secreto",emoji:"🔐",type:"code",desc:"Adivina el código numérico de tres cifras.",free:true},
+{id:8,name:"Teclea a toda velocidad",emoji:"⌨️",type:"typing",desc:"Escribe las palabras lo más rápido posible.",free:true},
+{id:9,name:"Maestro del color",emoji:"🎨",type:"color",desc:"Elige el color que corresponde a la palabra.",free:true},
+{id:10,name:"Mayor o menor",emoji:"🎲",type:"higher",desc:"Predice si el siguiente número será mayor o menor.",free:true},
+{id:11,name:"Lluvia de clics",emoji:"🖱️",type:"clicks",desc:"Consigue tantos clics como puedas en 10 segundos.",free:true},
+{id:12,name:"Laberinto digital",emoji:"🧩",type:"maze",desc:"Encuentra la salida del laberinto con las flechas.",free:true},
+{id:13,name:"Caza-bichos",emoji:"🐛",type:"whack",desc:"Pulsa los bichos que aparecen antes de que escapen.",free:true},
+{id:14,name:"Eco de memoria",emoji:"🔊",type:"sequence",desc:"Repite la secuencia de luces en el orden correcto.",free:true},
+{id:15,name:"Campo minado",emoji:"💣",type:"mines",desc:"Encuentra casillas seguras sin tocar una mina.",free:true},
+{id:16,name:"Orden numérico",emoji:"🔢",type:"order",desc:"Pulsa los números en orden ascendente.",free:true},
+{id:17,name:"Pulso de energía",emoji:"🔋",type:"charge",desc:"Pulsa rápidamente para cargar el reactor.",free:true},
+{id:18,name:"Trivia exprés",emoji:"❓",type:"quiz",desc:"Responde preguntas de cultura general.",free:false,cost:100},
+{id:19,name:"Supervivencia neon",emoji:"🛡️",type:"survive",desc:"Sobrevive a una secuencia de decisiones.",free:false,cost:150},
+{id:20,name:"Desafío infinito",emoji:"♾️",type:"infinite",desc:"Combina reflejos, memoria y precisión.",free:false,cost:200}
 ];
-let coins=Number(localStorage.getItem("na_coins")??500);
-let unlocked=new Set(JSON.parse(localStorage.getItem("na_owned")||"[]"));
-let daily=localStorage.getItem("na_daily")===new Date().toDateString();
-let stop=()=>{},gameTimer=null;
 const $=id=>document.getElementById(id);
-function save(){
- localStorage.setItem("na_coins",coins);
- localStorage.setItem("na_owned",JSON.stringify([...unlocked]));
- $("coins").textContent=coins;
- $("owned").textContent=unlocked.size;
- $("daily").disabled=daily;
- $("daily").textContent=daily?"Recompensa diaria reclamada":"Recompensa diaria +100";
+let data=loadData(),current=null,interval=null,ended=true,gameScore=0,gameTime=0,gameState={},shownTab="all";
+function loadData(){
+ try{
+  const d=JSON.parse(localStorage.getItem("neonArcade20"));
+  if(d&&typeof d.coins==="number")return d;
+ }catch(e){}
+ return {coins:500,unlocked:[],played:0,record:0,records:{},lastDaily:""};
 }
-function render(){
- $("catalog").innerHTML=games.map(g=>{
- let open=!g.p||unlocked.has(g.id);
- return `<article class="game"><div style="font-size:32px">${g.e}</div>
- <h3>${g.n}</h3><p>${g.d}</p>
- <small>${g.p?"🔒 "+g.p+" monedas":"✓ Gratis"}</small>
- <button data-id="${g.id}">${open?"Jugar":"Desbloquear"}</button></article>`;
- }).join("");
+function save(){localStorage.setItem("neonArcade20",JSON.stringify(data));updateStats()}
+function updateStats(){
+ $("coinCount").textContent=data.coins;
+ $("playedStat").textContent=data.played;
+ $("recordStat").textContent=data.record;
+ $("unlockedStat").textContent=(10+data.unlocked.length)+"/20";
 }
-$("catalog").addEventListener("click",e=>{
- const b=e.target.closest("[data-id]");if(b)launch(+b.dataset.id);
-});
-function launch(id){
+function notice(t){const n=$("notice");n.textContent=t;n.style.display="block";clearTimeout(notice.t);notice.t=setTimeout(()=>n.style.display="none",2600)}
+function isUnlocked(g){return g.free||data.unlocked.includes(g.id)}
+function showTab(tab,btn){
+ shownTab=tab;
+ document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+ if(btn)btn.classList.add("active");
+ $("catalog").classList.toggle("hidden",tab==="shop");
+ $("shop").classList.toggle("hidden",tab!=="shop");
+ $("gameScreen").classList.add("hidden");
+ renderGames();
+ if(tab==="shop")renderShop();
+}
+function renderGames(){
+ const list=games.filter(g=>shownTab==="all"||(shownTab==="free"&&g.free)||(shownTab==="premium"&&!g.free));
+ $("gameGrid").innerHTML=list.map(g=>`
+ <article class="game-card">
+  <div class="emoji">${g.emoji}</div><h3>${g.name}</h3><p>${g.desc}</p>
+  <div class="meta"><span class="tag ${g.free?'':'premium'}">${g.free?'GRATIS':'🔒 '+g.cost+' monedas'}</span><span>${data.records[g.id]||0} pts</span></div>
+  <button class="${isUnlocked(g)?'primary':''}" onclick="launch(${g.id})">${isUnlocked(g)?'▶ Jugar':('Desbloquear · '+g.cost+' 🪙')}</button>
+ </article>`).join("");
+}
+function renderShop(){
+ $("shopGrid").innerHTML=games.filter(g=>!g.free).map(g=>`
+ <article class="game-card"><div class="emoji">${g.emoji}</div><h3>${g.name}</h3><p>${g.desc}</p>
+ <div class="meta"><span class="tag premium">${g.cost} monedas</span><span>${isUnlocked(g)?'Desbloqueado':'Prémium'}</span></div>
+ <button class="${isUnlocked(g)?'':'primary'}" ${isUnlocked(g)?'disabled':''} onclick="buyGame(${g.id})">${isUnlocked(g)?'✓ Ya desbloqueado':'Desbloquear'}</button></article>`).join("");
+}
+function openShop(){showTab("shop",document.querySelectorAll("nav button")[3])}
+function buyGame(id){
  const g=games.find(x=>x.id===id);
- if(g.p&&!unlocked.has(id)){
-  if(coins<g.p){alert("No tienes suficientes monedas.");return}
-  if(!confirm("¿Desbloquear "+g.n+" por "+g.p+" monedas?"))return;
-  coins-=g.p;unlocked.add(id);save();render();
- }
- stop();if(gameTimer)clearInterval(gameTimer);gameTimer=null;
- $("catalogSection").style.display="none";$("play").style.display="block";
- $("title").textContent=g.e+" "+g.n;$("instructions").textContent=g.t;
- $("message").textContent="¡Prepárate!";$("controls").innerHTML="";
- const c=$("board"),x=c.getContext("2d");
- function button(text,fn){let b=document.createElement("button");b.textContent=text;b.onclick=fn;$("controls").append(b)}
- function finish(text){if(gameTimer)clearInterval(gameTimer);gameTimer=null;$("message").textContent=text}
- function clear(){x.clearRect(0,0,c.width,c.height)}
- if(id===1||id===6){
-  let player={x:280,y:280},objects=[],score=0,frames=0,ended=false,keys={};
-  const duration=id===1?20:0;
-  function spawn(){objects.push({x:20+Math.random()*560,y:-15,bad:id===6&&Math.random()<.4})}
-  function draw(){
-   clear();x.fillStyle="#142343";x.fillRect(0,0,600,340);
-   x.fillStyle="#38bdf8";x.beginPath();x.moveTo(player.x,player.y-18);x.lineTo(player.x-16,player.y+15);x.lineTo(player.x+16,player.y+15);x.fill();
-   objects.forEach(o=>{x.fillStyle=o.bad?"#fb7185":"#facc15";x.beginPath();x.arc(o.x,o.y,10,0,7);x.fill()});
-   x.fillStyle="white";x.fillText(id===1?"Tiempo: "+Math.floor(frames/25)+" s":"Orbes: "+score+"/5",12,22);
-  }
-  function step(){
-   if(ended)return;frames++;
-   if(frames%22===0)spawn();
-   if(keys.l)player.x-=5;if(keys.r)player.x+=5;
-   player.x=Math.max(18,Math.min(582,player.x));
-   objects.forEach(o=>o.y+=3);
-   objects=objects.filter(o=>{
-    if(Math.hypot(o.x-player.x,o.y-player.y)<22){
-     if(id===1){ended=true;finish("¡Impacto! Pulsa reiniciar para intentarlo otra vez.");return false}
-     if(o.bad){ended=true;finish("Zona peligrosa. Reinicia para probar otra vez.");return false}
-     score++;if(score>=5){ended=true;finish("¡Exploración completada!");return false}
-     return false;
-    }return o.y<360;
-   });
-   if(id===1&&frames>=duration*25){ended=true;finish("¡Has sobrevivido!");coins+=10;save()}
-   draw();
-  }
-  const keydown=e=>{if(e.key==="ArrowLeft"||e.key==="a")keys.l=true;if(e.key==="ArrowRight"||e.key==="d")keys.r=true};
-  const keyup=e=>{if(e.key==="ArrowLeft"||e.key==="a")keys.l=false;if(e.key==="ArrowRight"||e.key==="d")keys.r=false};
-  window.addEventListener("keydown",keydown);window.addEventListener("keyup",keyup);
-  button("⬅",()=>player.x=Math.max(18,player.x-25));button("Reiniciar",()=>launch(id));button("➡",()=>player.x=Math.min(582,player.x+25));
-  stop=()=>{window.removeEventListener("keydown",keydown);window.removeEventListener("keyup",keyup);if(gameTimer)clearInterval(gameTimer)};
-  gameTimer=setInterval(step,40);draw();
- }else if(id===2){
-  let score=0,left=15;
-  x.fillStyle="#111a32";x.fillRect(0,0,600,340);
-  x.fillStyle="#facc15";x.font="70px Arial";x.fillText("⭐",255,175);
-  button("¡Atrapar estrella!",()=>{if(left>0){score++;$("message").textContent="Puntos: "+score}});
-  gameTimer=setInterval(()=>{left--;$("message").textContent=`Tiempo: ${left}s · Puntos: ${score}`;if(left<=0){finish("¡Ronda terminada! Puntos: "+score);if(score>=10){coins+=10;save()}}},1000);
-  button("Reiniciar",()=>launch(id));
- }else if(id===3){
-  const symbols=["🌙","🍓","🦋","🎸","🐙","🍀","🔥","💎"];
-  let deck=[...symbols,...symbols].sort(()=>Math.random()-.5),open=[],found=new Set(),tries=0,lock=false;
-  function drawCards(){
-   $("controls").innerHTML="";
-   deck.forEach((s,i)=>{let b=document.createElement("button");b.style.width="65px";b.style.height="55px";b.style.margin="4px";b.textContent=found.has(i)||open.includes(i)?s:"❔";b.onclick=()=>{
-    if(lock||found.has(i)||open.includes(i))return;open.push(i);
-    if(open.length===2){tries++;lock=true;if(deck[open[0]]===deck[open[1]]){found.add(open[0]);found.add(open[1]);open=[];lock=false;drawCards();if(found.size===16)finish("¡Completado en "+tries+" intentos!")}
-    else setTimeout(()=>{open=[];lock=false;drawCards()},700)}
-    drawCards();
-   };$("controls").append(b)});
-   $("message").textContent=`Parejas: ${found.size/2}/8 · Intentos: ${tries}`;
-  }
-  drawCards();button("Nueva partida",()=>launch(id));
- }else if(id===4){
-  let cells=Array(16).fill(0),harvest=0;
-  function drawGarden(){
-   $("controls").innerHTML="";
-   cells.forEach((v,i)=>{let b=document.createElement("button");b.style.width="65px";b.style.height="55px";b.style.margin="4px";b.textContent=["🟫","🌰","🌿","🌻"][v];b.onclick=()=>{if(harvest>=8)return;cells[i]=(v+1)%4;if(v===2)harvest++;drawGarden();if(harvest>=8)finish("¡Jardín completado!")};$("controls").append(b)});
-   $("message").textContent="Cosechas: "+harvest+"/8";
-  }drawGarden();button("Reiniciar",()=>launch(id));
- }else if(id===5){
-  x.fillStyle="#5b1e32";x.fillRect(120,70,360,180);x.fillStyle="white";x.font="25px Arial";x.fillText("ESPERA A LA SEÑAL",155,160);
-  let phase="wait",delay=setTimeout(()=>{phase="go";x.fillStyle="#15803d";x.fillRect(120,70,360,180);x.fillStyle="white";x.fillText("¡PULSA AHORA!",185,160);window.reflexStart=performance.now()},1500+Math.random()*3000);
-  button("Pulsar",()=>{if(phase==="wait"){clearTimeout(delay);finish("¡Demasiado pronto! Reinicia.");}else if(phase==="go"){finish("Tiempo de reacción: "+Math.round(performance.now()-window.reflexStart)+" ms")}});
-  button("Reiniciar",()=>launch(id));stop=()=>clearTimeout(delay);
- }else if(id===7){
-  const secret=String(Math.floor(100+Math.random()*900));let attempts=0;
-  const input=document.createElement("input");input.placeholder="Tres cifras";input.maxLength=3;input.inputMode="numeric";input.style.padding="12px";input.style.width="120px";$("controls").append(input);
-  button("Probar",()=>{if(!/^\d{3}$/.test(input.value)){sayCipher("Introduce tres cifras.");return}attempts++;if(input.value===secret){finish("¡Código descifrado en "+attempts+" intentos!");coins+=20;save()}else{let exact=[...input.value].filter((v,i)=>v===secret[i]).length;$("message").textContent=`Cifras correctas en posición: ${exact}. Intenta otra vez.`}});
-  function sayCipher(t){$("message").textContent=t}button("Nuevo código",()=>launch(id));
- }else if(id===8){
-  let lane=1,pearls=0,obstacles=[],frames=0,ended=false;
-  function drawRace(){clear();x.fillStyle="#0e7490";x.fillRect(80,0,440,340);x.strokeStyle="#a5f3fc";for(let i=1;i<3;i++){x.beginPath();x.moveTo(80+i*440/3,0);x.lineTo(80+i*440/3,340);x.stroke()}x.fillStyle="#facc15";x.fillRect(80+lane*440/3+35,270,40,35);obstacles.forEach(o=>{x.fillStyle=o.pearl?"#38bdf8":"#fb7185";x.beginPath();x.arc(80+o.lane*440/3+55,o.y,12,0,7);x.fill()});x.fillStyle="white";x.fillText("Perlas: "+pearls+"/3",12,22)}
-  function stepRace(){if(ended)return;frames++;if(frames%35===0)obstacles.push({lane:Math.floor(Math.random()*3),y:-10,pearl:Math.random()<.35});obstacles.forEach(o=>o.y+=4);obstacles=obstacles.filter(o=>{if(o.y>255&&o.y<320&&o.lane===lane){if(o.pearl){pearls++;if(pearls>=3){ended=true;finish("¡Carrera completada!");coins+=10;save()}return false}ended=true;finish("¡Choque! Reinicia para intentarlo otra vez.");return false}return o.y<360});drawRace()}
-  button("⬅ Carril",()=>lane=Math.max(0,lane-1));button("Carril ➡",()=>lane=Math.min(2,lane+1));button("Reiniciar",()=>launch(id));gameTimer=setInterval(stepRace,40);drawRace();
+ if(!g||g.free||isUnlocked(g))return;
+ if(data.coins<g.cost){notice("No tienes suficientes monedas.");return}
+ data.coins-=g.cost;data.unlocked.push(id);save();renderGames();renderShop();notice("¡"+g.name+" desbloqueado!");
+}
+function dailyReward(){
+ const today=new Date().toLocaleDateString("en-CA");
+ if(data.lastDaily===today){notice("Ya has recogido tu recompensa de hoy.");return}
+ data.lastDaily=today;data.coins+=100;save();notice("¡Has recibido 100 monedas!");
+}
+function demoVideo(){
+ if(!confirm("Esto es una recompensa de demostración. No se mostrará un anuncio real. ¿Quieres recibir 25 monedas?"))return;
+ data.coins+=25;save();notice("+25 monedas de prueba");
+}
+function backToCatalog(){stopTimer();$("gameScreen").classList.add("hidden");$("catalog").classList.remove("hidden");$("shop").classList.toggle("hidden",shownTab!=="shop");renderGames()}
+function stopTimer(){if(interval)clearInterval(interval);interval=null}
+function setMessage(t){$("gameMessage").textContent=t}
+function area(html){$("playArea").innerHTML=html}
+function btn(t,fn,cls=""){const b=document.createElement("button");b.textContent=t;if(cls)b.className=cls;b.onclick=fn;return b}
+function addControls(...items){const d=document.createElement("div");d.className="controls";items.forEach(x=>d.appendChild(x));$("playArea").appendChild(d)}
+function launch(id){
+ const g=games.find(x=>x.id===id);if(!g)return;
+ if(!isUnlocked(g)){buyGame(id);return}
+ stopTimer();current=g;ended=true;gameScore=0;gameTime=0;gameState={};
+ $("catalog").classList.add("hidden");$("shop").classList.add("hidden");$("gameScreen").classList.remove("hidden");
+ $("gameTitle").textContent=g.emoji+" "+g.name;$("gameDescription").textContent=g.desc;
+ $("score").textContent="0";$("timer").textContent="—";$("gameRecord").textContent=data.records[id]||0;
+ setMessage("Pulsa comenzar para jugar.");
+ area('<div class="big">¿Preparado?</div><p>¡Buena suerte!</p>');
+ addControls(btn("▶ Comenzar",startGame,"primary"));
+}
+function score(n=1){gameScore+=n;$("score").textContent=gameScore}
+function startClock(seconds,finish){
+ stopTimer();gameTime=seconds;ended=false;$("timer").textContent=gameTime;
+ interval=setInterval(()=>{gameTime--;$("timer").textContent=gameTime;if(gameTime<=0){stopTimer();finish()}},1000)
+}
+function finishGame(msg){
+ if(ended)return;ended=true;stopTimer();setMessage(msg+" Puntuación: "+gameScore+".");
+ data.played++;data.records[current.id]=Math.max(data.records[current.id]||0,gameScore);data.record=Math.max(data.record,gameScore);
+ const reward=Math.max(3,Math.min(30,Math.floor(gameScore/2)+3));data.coins+=reward;save();
+ $("gameRecord").textContent=data.records[current.id];notice("¡+"+reward+" monedas por jugar!");
+ addControls(btn("↻ Volver a jugar",startGame,"primary"),btn("Catálogo",backToCatalog));
+}
+function startGame(){
+ stopTimer();ended=false;gameScore=0;gameState={};$("score").textContent="0";setMessage("¡A jugar!");area("");
+ switch(current.type){
+ case"target":gameTarget();break;
+ case"reaction":gameReaction();break;
+ case"pairs":gamePairs();break;
+ case"math":gameMath();break;
+ case"dodge":gameDodge();break;
+ case"catch":gameCatch();break;
+ case"code":gameCode();break;
+ case"typing":gameTyping();break;
+ case"color":gameColor();break;
+ case"higher":gameHigher();break;
+ case"clicks":gameClicks();break;
+ case"maze":gameMaze();break;
+ case"whack":gameWhack();break;
+ case"sequence":gameSequence();break;
+ case"mines":gameMines();break;
+ case"order":gameOrder();break;
+ case"charge":gameCharge();break;
+ case"quiz":gameQuiz();break;
+ case"survive":gameSurvive();break;
+ case"infinite":gameInfinite();break;
  }
 }
-function sayCipher(t){$("message").textContent=t}
-$("back").onclick=()=>{stop();if(gameTimer)clearInterval(gameTimer);gameTimer=null;$("play").style.display="none";$("catalogSection").style.display="block";render()};
-$("daily").onclick=()=>{if(daily)return;daily=true;localStorage.setItem("na_daily",new Date().toDateString());coins+=100;save()};
-$("reward").onclick=()=>{if(confirm("Esto es una simulación, no un anuncio real. ¿Añadir 25 monedas de prueba?")){coins+=25;save()}};
-save();render();
+function gameTarget(){
+ area('<p>Pulsa el botón objetivo tantas veces como puedas en 10 segundos.</p><div class="big">🌟</div>');
+ const b=btn("¡PULSAR! 🌟",()=>{if(!ended){score();b.style.transform=`scale(${.9+Math.random()*.3})`}},"primary");
+ addControls(b);startClock(10,()=>finishGame("¡Ronda terminada."));
+}
+function gameReaction(){
+ area('<div class="big" id="signal">🔴 ROJO</div><p>Cuando aparezca VERDE, pulsa lo más rápido posible.</p>');
+ const b=btn("Esperar señal",()=>{if(ended)return;if(!gameState.ready){setMessage("Todavía no. ¡Espera al verde!");return}score(Math.max(1,Math.floor(1000/Math.max(100,Date.now()-gameState.time))));finishGame("¡Buena reacción!")});
+ addControls(b);gameState.ready=false;
+ setTimeout(()=>{if(ended)return;gameState.ready=true;gameState.time=Date.now();$("signal").textContent="🟢 ¡AHORA!";b.textContent="¡PULSAR YA!";},1200+Math.random()*2500);
+ startClock(8,()=>finishGame("Se acabó el tiempo."));
+}
+function gamePairs(){
+ const symbols=["🌙","🚀","⭐","🪐","👾","💎","🌈","🔥"];
+ const deck=[...symbols,...symbols].sort(()=>Math.random()-.5);gameState.open=[];gameState.matched=[];
+ area('<p>Encuentra las ocho parejas.</p><div class="board" id="pairBoard" style="grid-template-columns:repeat(4,1fr)"></div>');
+ deck.forEach((s,i)=>{const b=btn("❔",()=>{if(ended||gameState.matched.includes(i)||gameState.open.includes(i)||gameState.open.length===2)return;b.textContent=s;gameState.open.push(i);if(gameState.open.length===2){const[a,c]=gameState.open;if(deck[a]===deck[c]){gameState.matched.push(a,c);score(2);gameState.open=[];if(gameState.matched.length===16)finishGame("¡Todas las parejas encontradas!")}else setTimeout(()=>{if(!ended){document.querySelectorAll(".paircard").forEach(x=>{if(!gameState.matched.includes(+x.dataset.i))x.textContent="❔"});gameState.open=[]}},650)}});b.className="tile paircard";b.dataset.i=i;$("pairBoard").appendChild(b)});
+ startClock(60,()=>finishGame("¡Tiempo agotado."));
+}
+function gameMath(){
+ let make=()=>{let a=1+Math.floor(Math.random()*20),b=1+Math.floor(Math.random()*15),op=Math.random()<.5?"+":"−";return{q:`${a} ${op} ${b} = ?`,ans:op==="+"?a+b:a-b}};
+ gameState.q=make();
+ area('<div class="big" id="question"></div><input id="answer" type="number" inputmode="numeric" placeholder="Respuesta"><div class="controls"><button id="submitAnswer" class="primary">Comprobar</button></div>');
+ function next(){gameState.q=make();$("question").textContent=gameState.q.q;$("answer").value="";}
+ next();
+ $("submitAnswer").onclick=()=>{if(ended)return;if(+$("answer").value===gameState.q.ans){score(2);next();setMessage("¡Correcto!")}else setMessage("Prueba otra vez.")};
+ $("answer").onkeydown=e=>{if(e.key==="Enter")$("submitAnswer").click()};
+ startClock(30,()=>finishGame("Fin del reto matemático."));
+}
+function gameDodge(){
+ let pos=1,round=0;
+ area('<p>En cada ronda, elige una de las tres posiciones. Evita la zona roja.</p><div class="big" id="dodgeInfo">Ronda 1</div><div class="controls" id="dodgeButtons"></div>');
+ function roundStart(){if(ended)return;round++;if(round>12){finishGame("¡Has cruzado el campo!");return}const danger=Math.floor(Math.random()*3);$("dodgeInfo").textContent="Ronda "+round+" · Elige una zona";$("dodgeButtons").innerHTML="";for(let i=0;i<3;i++){const b=btn(["⬅️","⬆️","➡️"][i],()=>{if(ended)return;if(i===danger){finishGame("Un meteorito te ha alcanzado.");return}score(2);roundStart()});$("dodgeButtons").appendChild(b)}}
+ roundStart();startClock(35,()=>finishGame("Se acabó el tiempo."));
+}
+function gameCatch(){
+ let round=0;
+ area('<p>Elige los cristales azules. Evita las trampas rojas.</p><div class="big" id="catchObj">💎</div><div class="controls" id="catchButtons"></div>');
+ function next(){if(ended)return;if(round++>=12){finishGame("¡Captura completada!");return}const good=Math.random()<.68;$("catchObj").textContent=good?"💎":"🟥";$("catchButtons").innerHTML="";["Atrapar","Dejar pasar"].forEach((t,i)=>{const b=btn(t,()=>{if((good&&i===0)||(!good&&i===1)){score(2);next()}else finishGame("¡Has caído en la trampa!")});$("catchButtons").appendChild(b)})}
+ next();startClock(30,()=>finishGame("Fin de la captura."));
+}
+function gameCode(){
+ const code=String(100+Math.floor(Math.random()*900));let tries=0;
+ area('<p>Adivina el código secreto de tres cifras. Tienes seis intentos.</p><input id="codeInput" maxlength="3" inputmode="numeric" placeholder="000"><div class="controls"><button id="codeTry" class="primary">Probar código</button></div><div id="codeHints"></div>');
+ $("codeTry").onclick=()=>{if(ended)return;const v=$("codeInput").value;if(!/^\d{3}$/.test(v)){setMessage("Escribe exactamente tres cifras.");return}tries++;if(v===code){score(Math.max(5,20-tries*2));finishGame("¡Código descifrado!");return}let exact=0,near=0;for(let i=0;i<3;i++){if(v[i]===code[i])exact++;else if(code.includes(v[i]))near++}$("codeHints").textContent=`Intento ${tries}: ${exact} cifra(s) en posición correcta, ${near} en posición incorrecta.`;if(tries>=6)finishGame("El código era "+code+".");};
+ startClock(45,()=>finishGame("Se acabó el tiempo. Código: "+code+"."));
+}
+function gameTyping(){
+ const words=["neon","galaxia","energia","planeta","estrella","pixel","universo","arcade","cosmos","cometa"];let word="";
+ area('<p>Escribe cada palabra correctamente.</p><div class="big" id="typeWord"></div><input id="typeInput" autocomplete="off" placeholder="Escribe aquí"><div class="controls"><button id="typeCheck" class="primary">Comprobar</button></div>');
+ function next(){word=words[Math.floor(Math.random()*words.length)];$("typeWord").textContent=word;$("typeInput").value="";$("typeInput").focus()}
+ next();$("typeCheck").onclick=()=>{if(ended)return;if($("typeInput").value.trim().toLowerCase()===word){score(2);next()}else setMessage("No coincide. Inténtalo de nuevo.")};
+ $("typeInput").onkeydown=e=>{if(e.key==="Enter")$("typeCheck").click()};
+ startClock(30,()=>finishGame("¡Fin de la prueba de escritura."));
+}
+function gameColor(){
+ const colors=[{n:"ROJO",c:"#fb7185"},{n:"AZUL",c:"#38bdf8"},{n:"VERDE",c:"#4ade80"},{n:"AMARILLO",c:"#facc15"}];let target;
+ area('<p>Elige el botón que coincide con el color de la palabra, no con su significado.</p><div class="big" id="colorWord"></div><div class="controls" id="colorBtns"></div>');
+ function next(){target=colors[Math.floor(Math.random()*4)];$("colorWord").textContent=target.n;$("colorWord").style.color=colors[Math.floor(Math.random()*4)].c;$("colorBtns").innerHTML="";colors.forEach(c=>{const b=btn(c.n,()=>{if(ended)return;if(c.n===target.n){score(2);next()}else setMessage("¡Fíjate en el texto!")});b.style.borderColor=c.c;$("colorBtns").appendChild(b)})}
+ next();startClock(25,()=>finishGame("¡Fin de la prueba de color."));
+}
+function gameHigher(){
+ let n=1+Math.floor(Math.random()*10),round=0;
+ area('<p>¿Será mayor o menor el siguiente número?</p><div class="big" id="higherNum"></div><div class="controls" id="higherBtns"></div>');
+ function next(){if(ended)return;if(round++>=10){finishGame("¡Ronda completada!");return}$("higherNum").textContent=n;$("higherBtns").innerHTML="";["Mayor","Menor"].forEach((t,i)=>{const b=btn(t,()=>{const m=1+Math.floor(Math.random()*10);if((i===0&&m>n)||(i===1&&m<n)){score(2);n=m;next()}else{n=m;finishGame("El número siguiente era "+m+".")}});$("higherBtns").appendChild(b)})}
+ next();startClock(30,()=>finishGame("Fin de la predicción."));
+}
+function gameClicks(){
+ area('<p>¡Pulsa tan rápido como puedas durante 10 segundos!</p><div class="big">🖱️</div>');
+ addControls(btn("¡CLIC!",()=>{if(!ended)score(1)},"primary"));
+ startClock(10,()=>finishGame("¡Ronda de clics terminada."));
+}
+function gameMaze(){
+ let p=0,goal=15;const walls=new Set([1,4,5,7,9,10,13]);walls.delete(15);
+ area('<p>Muévete por el tablero desde 🟢 hasta 🏁. Las casillas oscuras son muros.</p><div id="mazeBoard" class="board" style="grid-template-columns:repeat(4,1fr)"></div><div class="controls" id="mazeControls"></div>');
+ function draw(){const board=$("mazeBoard");board.innerHTML="";for(let i=0;i<16;i++){const b=btn(i===p?"🟢":i===goal?"🏁":walls.has(i)?"⬛":"·",()=>move(i));b.className="tile";board.appendChild(b)}}
+ function move(i){if(ended||Math.abs(Math.floor(i/4)-Math.floor(p/4))+Math.abs(i%4-p%4)!==1||walls.has(i))return;p=i;score(1);draw();if(p===goal)finishGame("¡Has escapado del laberinto!")}
+ const dirs=[["⬆️",-4],["⬅️",-1],["⬇️",4],["➡️",1]];
+ dirs.forEach(([t,d])=>{$("mazeControls").appendChild(btn(t,()=>{let i=p+d;if(i<0||i>15||(d===1&&p%4===3)||(d===-1&&p%4===0))return;move(i)}))});
+ draw();startClock(45,()=>finishGame("Te has quedado en el laberinto."));
+}
+function gameWhack(){
+ let round=0;
+ area('<p>¡Pulsa los bichos, evita las bombas!</p><div class="big" id="whackTarget"></div><div class="controls" id="whackButtons"></div>');
+ function next(){if(ended)return;if(round++>=15){finishGame("¡Has limpiado la pantalla!");return}const good=Math.random()>.25;$("whackTarget").textContent=good?"🐛":"💣";$("whackButtons").innerHTML="";const b=btn(good?"¡Aplastar!":"¡Evitar!",()=>{if(ended)return;if(good){score(2);next()}else finishGame("¡Era una bomba!")});$("whackButtons").appendChild(b);if(!good){$("whackButtons").appendChild(btn("No pulsar",()=>{score(2);next()}))}}
+ next();startClock(25,()=>finishGame("Fin de la caza."));
+}
+function gameSequence(){
+ const seq=[];let step=0;
+ area('<p>Memoriza la secuencia de colores y repítela.</p><div class="big" id="seqDisplay">Observa...</div><div class="controls" id="seqBtns"></div>');
+ const cols=[["🔴","#fb7185"],["🔵","#38bdf8"],["🟢","#4ade80"],["🟡","#facc15"]];
+ function next(){if(ended)return;seq.push(Math.floor(Math.random()*4));step=0;$("seqDisplay").textContent=seq.map(x=>cols[x][0]).join(" ");$("seqBtns").innerHTML="";setTimeout(()=>{if(ended)return;$("seqDisplay").textContent="¡Repítela!";cols.forEach((c,i)=>{const b=btn(c[0],()=>{if(ended)return;if(seq[step]!==i){finishGame("Secuencia incorrecta.");return}step++;if(step===seq.length){score(seq.length*2);next()}});b.style.borderColor=c[1];$("seqBtns").appendChild(b)})},Math.min(2200,700+seq.length*180))}
+ next();startClock(40,()=>finishGame("¡Tiempo agotado."));
+}
+function gameMines(){
+ let safe=0;const mine=Math.floor(Math.random()*16);
+ area('<p>Encuentra ocho casillas seguras. ¡Cuidado con la mina!</p><div id="mineBoard" class="board" style="grid-template-columns:repeat(4,1fr)"></div>');
+ for(let i=0;i<16;i++){const b=btn("?",()=>{if(ended||b.disabled)return;b.disabled=true;if(i===mine){b.textContent="💣";b.classList.add("bad");finishGame("¡Has tocado una mina!");return}b.textContent="💎";b.classList.add("good");safe++;score(2);if(safe===8)finishGame("¡Has encontrado ocho casillas seguras!")});b.className="tile";$("mineBoard").appendChild(b)}
+ startClock(30,()=>finishGame("Se acabó el tiempo."));
+}
+function gameOrder(){
+ let nums=[1,2,3,4,5,6,7,8,9].sort(()=>Math.random()-.5),next=1;
+ area('<p>Pulsa los números en orden ascendente del 1 al 9.</p><div id="orderBoard" class="board" style="grid-template-columns:repeat(3,1fr)"></div>');
+ nums.forEach(n=>{const b=btn(n,()=>{if(ended)return;if(n===next){b.disabled=true;b.classList.add("good");score(1);next++;if(next===10)finishGame("¡Orden perfecto!")}else setMessage("Busca el número "+next+".")});b.className="tile";$("orderBoard").appendChild(b)});
+ startClock(35,()=>finishGame("Fin del orden numérico."));
+}
+function gameCharge(){
+ let charge=0;
+ area('<p>Pulsa para cargar el reactor hasta el 100% antes de que se agote el tiempo.</p><div class="big" id="chargeMeter">0%</div><div class="controls" id="chargeBtns"></div>');
+ const b=btn("⚡ CARGAR",()=>{if(ended)return;charge=Math.min(100,charge+Math.floor(4+Math.random()*9));$("chargeMeter").textContent=charge+"%";score(1);if(charge>=100)finishGame("¡Reactor cargado!")},"primary");
+ addControls(b);startClock(20,()=>finishGame("Carga final: "+charge+"%."));
+}
+function gameQuiz(){
+ const qs=[
+ ["¿Cuál es el planeta rojo?","Marte",["Venus","Marte","Júpiter"]],
+ ["¿Cuántos lados tiene un hexágono?","6",["5","6","8"]],
+ ["¿Qué estrella ilumina la Tierra?","El Sol",["Sirio","La Luna","El Sol"]],
+ ["¿Cuánto es 8 × 7?","56",["54","56","64"]],
+ ["¿Qué animal es un mamífero?","Delfín",["Tiburón","Delfín","Pulpo"]],
+ ["¿Cuál es el océano más grande?","Pacífico",["Atlántico","Índico","Pacífico"]],
+ ["¿Cuántos minutos tiene una hora?","60",["30","60","100"]]
+ ];let i=0;
+ area('<div class="big" id="quizQ"></div><div class="controls" id="quizOpts"></div>');
+ function next(){if(ended)return;if(i>=qs.length){finishGame("¡Trivia completada!");return}const q=qs[i++];$("quizQ").textContent=q[0];$("quizOpts").innerHTML="";q[2].sort(()=>Math.random()-.5).forEach(a=>$("quizOpts").appendChild(btn(a,()=>{if(ended)return;if(a===q[1]){score(3);next()}else finishGame("Respuesta incorrecta. La respuesta era "+q[1]+".")})))}
+ next();startClock(45,()=>finishGame("Fin de la trivia."));
+}
+function gameSurvive(){
+ let r=0;
+ area('<p>Sobrevive a diez decisiones. Elige la acción segura en cada escenario.</p><div class="big" id="surviveQ"></div><div class="controls" id="surviveOpts"></div>');
+ const scenarios=[
+ {q:"Un meteorito se acerca.",good:"Esquivar",bad:"Quedarse quieto"},
+ {q:"Se enciende una luz roja.",good:"Frenar",bad:"Acelerar"},
+ {q:"El suelo empieza a temblar.",good:"Buscar refugio",bad:"Saltar sin mirar"},
+ {q:"La energía está baja.",good:"Recargar",bad:"Ignorarla"},
+ {q:"Hay una puerta bloqueada.",good:"Buscar una llave",bad:"Golpear la pantalla"}
+ ];
+ function next(){if(ended)return;if(r>=10){finishGame("¡Has sobrevivido!");return}const s=scenarios[Math.floor(Math.random()*scenarios.length)];$("surviveQ").textContent=s.q;$("surviveOpts").innerHTML="";[s.good,s.bad].sort(()=>Math.random()-.5).forEach(a=>$("surviveOpts").appendChild(btn(a,()=>{if(ended)return;if(a===s.good){r++;score(2);next()}else finishGame("Decisión equivocada.")})))}
+ next();startClock(35,()=>finishGame("Se acabó el tiempo."));
+}
+function gameInfinite(){
+ let r=0;
+ area('<p>Desafío mixto: resuelve cada prueba rápida para sumar puntos.</p><div class="big" id="infQ"></div><div class="controls" id="infOpts"></div>');
+ function next(){if(ended)return;if(r>=12){finishGame("¡Has superado el desafío mixto!");return}r++;const a=1+Math.floor(Math.random()*9),b=1+Math.floor(Math.random()*9),ans=a+b,choices=[ans,ans+1+Math.floor(Math.random()*3),Math.max(1,ans-1-Math.floor(Math.random()*2))].sort(()=>Math.random()-.5);$("infQ").textContent=`Reto ${r}/12: ${a} + ${b} = ?`;$("infOpts").innerHTML="";choices.forEach(c=>$("infOpts").appendChild(btn(c,()=>{if(ended)return;if(c===ans){score(2);next()}else finishGame("La respuesta era "+ans+".")})))}
+ next();startClock(40,()=>finishGame("Fin del desafío mixto."));
+}
+updateStats();renderGames();renderShop();
 </script>
 </body>
 </html>
