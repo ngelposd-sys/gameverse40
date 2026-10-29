@@ -1,390 +1,454 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#090716">
-<title>NEON ARCADE 2.0</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090817">
+<title>NEON ARCADE</title>
 <style>
-:root{--bg:#090716;--panel:#15112a;--purple:#a855f7;--blue:#38bdf8;--text:#f5f3ff;--muted:#aaa3c7;--green:#4ade80;--red:#fb7185}
+:root{--bg:#090817;--panel:#15132a;--panel2:#201b3b;--purple:#a855f7;--blue:#38bdf8;--text:#f5f3ff;--muted:#aaa6c8;--green:#4ade80;--red:#fb7185}
 *{box-sizing:border-box}
-body{margin:0;background:radial-gradient(ellipse at top,#211044 0,#090716 60%);color:var(--text);font-family:system-ui,Arial,sans-serif;min-height:100vh}
-header{padding:20px 5%;border-bottom:1px solid #39245e;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:#090716cc;position:sticky;top:0;z-index:5;backdrop-filter:blur(12px)}
-.logo{font-size:clamp(22px,4vw,34px);font-weight:1000;letter-spacing:2px;color:#d8b4fe;text-shadow:0 0 18px #a855f7}
-.coins{background:#241744;border:1px solid #8b5cf6;padding:10px 15px;border-radius:14px;font-weight:bold;color:#fde68a}
-main{max-width:1200px;margin:auto;padding:22px 16px 60px}
-.hero{padding:26px 10px 18px}
-h1{font-size:clamp(28px,5vw,46px);margin:0 0 10px}
-p{color:var(--muted);line-height:1.6}
-nav{display:flex;gap:8px;flex-wrap:wrap;margin:15px 0 22px}
-button,select,input{font:inherit}
-button{cursor:pointer;border:1px solid #59417f;background:#24163e;color:white;border-radius:11px;padding:10px 14px;transition:.15s}
-button:hover{border-color:var(--blue);transform:translateY(-1px);box-shadow:0 0 12px #38bdf833}
-button.primary{background:linear-gradient(110deg,#7c3aed,#2563eb);border:0;font-weight:800}
-button:disabled{opacity:.45;cursor:not-allowed;transform:none}
-nav button.active{background:#7c3aed;border-color:#c4b5fd}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;margin:20px 0}
-.stat,.panel,.game-card{background:#15112a;border:1px solid #38275b;border-radius:16px;padding:16px}
-.stat strong{display:block;font-size:25px;color:#c4b5fd}
-.stat span{color:var(--muted);font-size:13px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:13px}
-.game-card{display:flex;flex-direction:column;gap:9px;min-height:205px}
-.game-card .emoji{font-size:35px}
-.game-card h3{margin:0;font-size:18px}
-.game-card p{font-size:13px;margin:0;flex:1}
-.game-card .meta{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
-.tag{padding:4px 8px;border-radius:7px;background:#2b1e47}
-.tag.premium{color:#fde68a}
-.hidden{display:none!important}
-#gameScreen{margin-top:15px}
-.game-head{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
-#playArea{min-height:270px;margin-top:16px;padding:18px;border-radius:15px;background:#0c0a1b;border:1px solid #39245e;text-align:center}
-.big{font-size:clamp(27px,6vw,48px);font-weight:900;margin:18px 0}
-.controls{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin:15px 0}
-.message{min-height:28px;color:#c4b5fd;margin:12px}
-.board{display:grid;gap:7px;max-width:430px;margin:18px auto}
-.tile{min-height:58px;font-size:21px;font-weight:800;padding:8px}
-.tile.good{background:#166534}.tile.bad{background:#9f1239}
-input,select{background:#0c0a1b;color:white;border:1px solid #59417f;border-radius:9px;padding:10px;max-width:100%}
-#notice{position:fixed;bottom:15px;left:50%;transform:translateX(-50%);background:#241744;border:1px solid #8b5cf6;border-radius:12px;padding:12px 18px;z-index:10;display:none;max-width:90%;text-align:center}
-footer{text-align:center;color:#82789f;padding:30px 10px;font-size:12px}
+body{margin:0;background:radial-gradient(ellipse at top,#21133e 0,#090817 55%);color:var(--text);font-family:system-ui,Arial,sans-serif;min-height:100vh}
+button,input,select{font:inherit}
+button{cursor:pointer;border:1px solid #48406c;background:#292344;color:white;border-radius:12px;padding:11px 14px;transition:.15s}
+button:hover{border-color:var(--blue);transform:translateY(-1px)}
+button:disabled{opacity:.4;cursor:not-allowed;transform:none}
+header{position:sticky;top:0;z-index:5;background:#0c0a1bee;backdrop-filter:blur(12px);border-bottom:1px solid #30274c;padding:14px 4%;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.logo{font-size:23px;font-weight:950;letter-spacing:2px}.logo span{color:var(--blue)}
+.balance{background:#211a38;border:1px solid #5b3983;border-radius:14px;padding:9px 14px;color:#fde68a;font-weight:800}
+main{max-width:1200px;margin:auto;padding:25px 18px 60px}
+.hero{text-align:center;padding:28px 10px 35px}
+.hero h1{font-size:clamp(30px,6vw,55px);margin:0 0 8px;line-height:1.12}
+.hero h1 span{color:var(--blue);text-shadow:0 0 24px #38bdf855}
+.hero p{color:var(--muted);max-width:650px;margin:12px auto 22px}
+.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.primary{background:linear-gradient(120deg,#7c3aed,#2563eb);border:0;font-weight:750}
+.reward{background:#173c38;border-color:#26776c}
+.sectionhead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:25px 0 15px}
+.sectionhead h2{margin:0;font-size:23px}
+#search{background:#15132a;color:white;border:1px solid #494064;border-radius:12px;padding:11px 13px;max-width:100%;width:250px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.filters button.active{background:#6337a6;border-color:#c084fc}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.card{position:relative;background:linear-gradient(145deg,#1c1834,#100e20);border:1px solid #342b51;border-radius:17px;padding:17px;min-height:190px;display:flex;flex-direction:column;gap:10px}
+.card .emoji{font-size:31px}
+.card h3{margin:0;font-size:17px}
+.card p{margin:0;color:var(--muted);font-size:13px;line-height:1.5;flex:1}
+.card .meta{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:12px;color:#c4b5fd}
+.card button{width:100%}
+.lock{color:#fbbf24}
+.notice{border:1px solid #383052;background:#141127;border-radius:14px;padding:14px;color:var(--muted);font-size:13px;line-height:1.6;margin-top:24px}
+#gameScreen{display:none}
+.game-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.game-top h2{margin:0;font-size:25px}
+.game-panel{max-width:760px;margin:0 auto;background:linear-gradient(145deg,#1a1630,#100e20);border:1px solid #443563;border-radius:22px;padding:clamp(16px,4vw,30px);box-shadow:0 15px 50px #0004}
+#gameDesc{color:var(--muted);margin:0 0 20px;line-height:1.5}
+#arena{min-height:220px}
+#message{min-height:30px;margin:15px 0 5px;color:#c4b5fd;font-weight:650;line-height:1.5}
+.center{text-align:center}
+.big{font-size:38px;font-weight:900;margin:12px 0}
+.rowbtn{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;max-width:430px;margin:15px auto}
+.tiles button{min-height:54px;font-size:20px;padding:8px}
+.tiles.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.field{width:100%;max-width:340px;display:block;margin:12px auto;background:#0c0a1b;color:white;border:1px solid #554674;border-radius:12px;padding:12px}
+.bigbtn{font-size:22px;min-width:120px;min-height:65px}
+.bar{height:20px;background:#0b0918;border:1px solid #45385e;border-radius:20px;overflow:hidden;margin:15px 0}
+.bar div{height:100%;width:50%;background:linear-gradient(90deg,#7c3aed,#38bdf8)}
+.small{font-size:12px;color:var(--muted)}
+footer{text-align:center;color:#77728f;padding:30px 15px;font-size:12px}
+@media(max-width:520px){header{padding:12px}.logo{font-size:19px}main{padding:16px 12px 40px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.card{padding:12px;min-height:205px}.card h3{font-size:15px}.card p{font-size:12px}.card button{padding:10px 5px;font-size:13px}.tiles button{min-height:48px;padding:5px}}
 </style>
 </head>
 <body>
 <header>
-  <div class="logo">✦ NEON ARCADE <small style="font-size:12px">2.0</small></div>
-  <div class="coins">🪙 <span id="coinCount">500</span> monedas</div>
+  <div class="logo">NEON <span>ARCADE</span></div>
+  <div class="balance">🪙 <span id="coins">100</span> monedas</div>
 </header>
+
 <main>
-<section class="hero">
-  <h1>Tu universo de juegos.</h1>
-  <p>20 minijuegos, desafíos, récords y recompensas. ¡Entra, juega y supera tu mejor marca!</p>
-  <div class="stats">
-    <div class="stat"><strong id="playedStat">0</strong><span>Partidas terminadas</span></div>
-    <div class="stat"><strong id="recordStat">0</strong><span>Récord personal</span></div>
-    <div class="stat"><strong id="unlockedStat">10/20</strong><span>Juegos desbloqueados</span></div>
-  </div>
-  <div class="controls">
-    <button class="primary" onclick="dailyReward()">🎁 Recompensa diaria</button>
-    <button onclick="demoVideo()">▶ Ver vídeo de prueba (+25)</button>
-    <button onclick="openShop()">🛒 Tienda de monedas</button>
-  </div>
-</section>
+  <section id="home">
+    <div class="hero">
+      <h1>JUEGA EN OTRA <span>DIMENSIÓN</span></h1>
+      <p>Desafíos arcade, reflejos, memoria, lógica y estrategia. Gana monedas jugando y desbloquea nuevos desafíos.</p>
+      <div class="actions">
+        <button class="primary" onclick="showCatalog()">🎮 Explorar juegos</button>
+        <button class="reward" onclick="dailyReward()">🎁 Recompensa diaria</button>
+        <button onclick="demoReward()">▶ Recompensa de prueba</button>
+      </div>
+      <p class="small">La recompensa de vídeo de esta versión es una demostración, no un anuncio real.</p>
+    </div>
 
-<nav>
-  <button class="active" onclick="showTab('all',this)">Todos</button>
-  <button onclick="showTab('free',this)">Gratis</button>
-  <button onclick="showTab('premium',this)">🔒 Prémium</button>
-  <button onclick="showTab('shop',this)">🛒 Tienda</button>
-</nav>
+    <div class="sectionhead">
+      <h2>🚀 Catálogo arcade</h2>
+      <input id="search" placeholder="Buscar juego..." oninput="renderCatalog()">
+    </div>
+    <div class="filters">
+      <button class="active" data-filter="all" onclick="setFilter('all',this)">Todos</button>
+      <button data-filter="free" onclick="setFilter('free',this)">Gratis</button>
+      <button data-filter="premium" onclick="setFilter('premium',this)">Prémium</button>
+      <button data-filter="unlocked" onclick="setFilter('unlocked',this)">Desbloqueados</button>
+    </div>
+    <div id="catalog" class="grid"></div>
+    <div class="notice">
+      <strong>Versión de prueba:</strong> el saldo y los desbloqueos se guardan en este navegador. Borrar sus datos puede hacer que se pierdan. Las monedas no tienen valor monetario real y todavía no hay compras ni anuncios conectados.
+    </div>
+  </section>
 
-<section id="catalog">
-  <div class="grid" id="gameGrid"></div>
-</section>
-
-<section id="shop" class="panel hidden">
-  <h2>🛒 Tienda de NEON</h2>
-  <p>Usa tus monedas para desbloquear juegos prémium. Los paquetes de monedas de pago todavía no están conectados.</p>
-  <div class="grid" id="shopGrid"></div>
-</section>
-
-<section id="gameScreen" class="panel hidden">
-  <div class="game-head">
-    <div><h2 id="gameTitle" style="margin:0">Juego</h2><p id="gameDescription" style="margin:4px 0"></p></div>
-    <button onclick="backToCatalog()">✕ Volver</button>
-  </div>
-  <div class="game-head"><span>⏱️ Tiempo: <b id="timer">—</b></span><span>⭐ Puntos: <b id="score">0</b></span><span>🏆 Récord: <b id="gameRecord">0</b></span></div>
-  <div id="playArea"></div>
-  <div class="message" id="gameMessage">Pulsa comenzar para jugar.</div>
-</section>
-
-<footer>NEON ARCADE 2.0 · Progreso guardado en este navegador · Las recompensas de vídeo son demostrativas.</footer>
+  <section id="gameScreen">
+    <div class="game-top">
+      <button onclick="exitGame()">← Volver al catálogo</button>
+      <h2 id="gameTitle">Juego</h2>
+      <span class="balance">🪙 <span id="gameCoins">100</span></span>
+    </div>
+    <div class="game-panel">
+      <p id="gameDesc"></p>
+      <div id="arena"></div>
+      <div id="message" role="status" aria-live="polite"></div>
+      <div class="rowbtn" id="gameActions"></div>
+    </div>
+  </section>
 </main>
-<div id="notice"></div>
+
+<footer>NEON ARCADE · Prototipo web · Juega con responsabilidad</footer>
 
 <script>
-const games=[
-{id:1,name:"Cazador de estrellas",emoji:"🌟",type:"target",desc:"Pulsa el objetivo tantas veces como puedas.",free:true},
-{id:2,name:"Duelo de reflejos",emoji:"⚡",type:"reaction",desc:"Espera la señal verde y reacciona rápido.",free:true},
-{id:3,name:"Memoria cósmica",emoji:"🧠",type:"pairs",desc:"Encuentra todas las parejas de símbolos.",free:true},
-{id:4,name:"Reto matemático",emoji:"➗",type:"math",desc:"Resuelve operaciones antes de que termine el tiempo.",free:true},
-{id:5,name:"Esquiva meteoritos",emoji:"☄️",type:"dodge",desc:"Encuentra el hueco entre los meteoritos.",free:true},
-{id:6,name:"Atrapa-neones",emoji:"🧲",type:"catch",desc:"Atrapa los objetos correctos y evita las trampas.",free:true},
-{id:7,name:"Código secreto",emoji:"🔐",type:"code",desc:"Adivina el código numérico de tres cifras.",free:true},
-{id:8,name:"Teclea a toda velocidad",emoji:"⌨️",type:"typing",desc:"Escribe las palabras lo más rápido posible.",free:true},
-{id:9,name:"Maestro del color",emoji:"🎨",type:"color",desc:"Elige el color que corresponde a la palabra.",free:true},
-{id:10,name:"Mayor o menor",emoji:"🎲",type:"higher",desc:"Predice si el siguiente número será mayor o menor.",free:true},
-{id:11,name:"Lluvia de clics",emoji:"🖱️",type:"clicks",desc:"Consigue tantos clics como puedas en 10 segundos.",free:true},
-{id:12,name:"Laberinto digital",emoji:"🧩",type:"maze",desc:"Encuentra la salida del laberinto con las flechas.",free:true},
-{id:13,name:"Caza-bichos",emoji:"🐛",type:"whack",desc:"Pulsa los bichos que aparecen antes de que escapen.",free:true},
-{id:14,name:"Eco de memoria",emoji:"🔊",type:"sequence",desc:"Repite la secuencia de luces en el orden correcto.",free:true},
-{id:15,name:"Campo minado",emoji:"💣",type:"mines",desc:"Encuentra casillas seguras sin tocar una mina.",free:true},
-{id:16,name:"Orden numérico",emoji:"🔢",type:"order",desc:"Pulsa los números en orden ascendente.",free:true},
-{id:17,name:"Pulso de energía",emoji:"🔋",type:"charge",desc:"Pulsa rápidamente para cargar el reactor.",free:true},
-{id:18,name:"Trivia exprés",emoji:"❓",type:"quiz",desc:"Responde preguntas de cultura general.",free:false,cost:100},
-{id:19,name:"Supervivencia neon",emoji:"🛡️",type:"survive",desc:"Sobrevive a una secuencia de decisiones.",free:false,cost:150},
-{id:20,name:"Desafío infinito",emoji:"♾️",type:"infinite",desc:"Combina reflejos, memoria y precisión.",free:false,cost:200}
+"use strict";
+
+const games = [
+{id:1,name:"Cazador de estrellas",emoji:"🌟",desc:"Encuentra y pulsa la estrella correcta diez veces.",type:"target",cost:0},
+{id:2,name:"Duelo de reflejos",emoji:"⚡",desc:"Espera a que la señal se ponga verde y pulsa a tiempo.",type:"reaction",cost:0},
+{id:3,name:"Memoria cósmica",emoji:"🧠",desc:"Encuentra todas las parejas ocultas.",type:"pairs",cost:0},
+{id:4,name:"Reto matemático",emoji:"➗",desc:"Resuelve cinco operaciones contra el reloj.",type:"math",cost:0},
+{id:5,name:"Esquiva meteoritos",emoji:"☄️",desc:"Escoge un carril seguro durante cinco rondas.",type:"dodge",cost:0},
+{id:6,name:"Atrapa-neones",emoji:"🟢",desc:"Pulsa solo cuando aparezca la señal activa.",type:"catch",cost:0},
+{id:7,name:"Código secreto",emoji:"🔐",desc:"Descifra el código numérico con pistas.",type:"code",cost:0},
+{id:8,name:"Teclea a toda velocidad",emoji:"⌨️",desc:"Escribe correctamente cinco palabras.",type:"typing",cost:0},
+{id:9,name:"Maestro del color",emoji:"🎨",desc:"Identifica el color indicado, no el texto.",type:"color",cost:0},
+{id:10,name:"Mayor o menor",emoji:"🔢",desc:"Adivina si el siguiente número será mayor o menor.",type:"higher",cost:0},
+{id:11,name:"Lluvia de clics",emoji:"🖱️",desc:"Consigue tantos clics como puedas en diez segundos.",type:"clicks",cost:0},
+{id:12,name:"Laberinto digital",emoji:"🧩",desc:"Encuentra la salida utilizando las flechas.",type:"maze",cost:0},
+{id:13,name:"Caza-bichos",emoji:"🐛",desc:"Atrapa los objetivos que aparecen en la cuadrícula.",type:"whack",cost:0},
+{id:14,name:"Eco de memoria",emoji:"🎼",desc:"Repite una secuencia de colores cada vez más larga.",type:"sequence",cost:0},
+{id:15,name:"Campo minado",emoji:"💣",desc:"Abre casillas seguras sin encontrar una mina.",type:"mines",cost:0},
+{id:16,name:"Orden numérico",emoji:"🔀",desc:"Selecciona los números de menor a mayor.",type:"order",cost:0},
+{id:17,name:"Pulso de energía",emoji:"🔋",desc:"Detén la carga dentro de la zona objetivo.",type:"charge",cost:0},
+{id:18,name:"Trivia exprés",emoji:"❓",desc:"Responde cinco preguntas de cultura general.",type:"quiz",cost:100},
+{id:19,name:"Supervivencia neón",emoji:"🛡️",desc:"Sobrevive a cinco ataques eligiendo una defensa.",type:"survive",cost:150},
+{id:20,name:"Desafío infinito",emoji:"♾️",desc:"Resuelve una cadena creciente de operaciones.",type:"infinite",cost:200},
+{id:21,name:"Tres en raya",emoji:"⭕",desc:"Consigue tres símbolos en línea contra el ordenador.",type:"ttt",cost:0},
+{id:22,name:"Piedra, papel o tijera",emoji:"✊",desc:"Enfréntate al ordenador al mejor de cinco rondas.",type:"rps",cost:0},
+{id:23,name:"Ahorcado galáctico",emoji:"🔤",desc:"Descubre la palabra antes de agotar los intentos.",type:"hangman",cost:0},
+{id:24,name:"Adivina el número",emoji:"🎯",desc:"Encuentra el número secreto entre uno y cincuenta.",type:"guess",cost:0},
+{id:25,name:"Mosaico oculto",emoji:"🟪",desc:"Memoriza las casillas iluminadas y repite el patrón.",type:"pattern",cost:0},
+{id:26,name:"Palabra revuelta",emoji:"🌀",desc:"Ordena las letras para descubrir la palabra.",type:"scramble",cost:0},
+{id:27,name:"Parada perfecta",emoji:"⏱️",desc:"Detén el cronómetro lo más cerca posible de cinco segundos.",type:"precision",cost:0},
+{id:28,name:"Equilibrio digital",emoji:"⚖️",desc:"Ajusta el indicador y déjalo cerca del centro.",type:"balance",cost:0},
+{id:29,name:"Serpiente neón",emoji:"🐍",desc:"Guía la serpiente por la cuadrícula y recoge energía.",type:"snake",cost:0},
+{id:30,name:"Defensa orbital",emoji:"🪐",desc:"Protege el núcleo eligiendo el sector amenazado.",type:"orbital",cost:0}
 ];
+
+const initial = {coins:100,unlocked:[],daily:"",best:{}};
+let data;
+try {
+  data = Object.assign({},initial,JSON.parse(localStorage.getItem("neonArcadeSave")||"{}"));
+  if(!Array.isArray(data.unlocked))data.unlocked=[];
+  if(!data.best||typeof data.best!=="object")data.best={};
+  data.coins=Math.max(0,Number(data.coins)||0);
+} catch(e){data={...initial,unlocked:[],best:{}};}
+
+let filter="all", current=null, state={}, timers=[], interval=null, ended=false, gameStartedAt=0;
 const $=id=>document.getElementById(id);
-let data=loadData(),current=null,interval=null,ended=true,gameScore=0,gameTime=0,gameState={},shownTab="all";
-function loadData(){
- try{
-  const d=JSON.parse(localStorage.getItem("neonArcade20"));
-  if(d&&typeof d.coins==="number")return d;
- }catch(e){}
- return {coins:500,unlocked:[],played:0,record:0,records:{},lastDaily:""};
-}
-function save(){localStorage.setItem("neonArcade20",JSON.stringify(data));updateStats()}
-function updateStats(){
- $("coinCount").textContent=data.coins;
- $("playedStat").textContent=data.played;
- $("recordStat").textContent=data.record;
- $("unlockedStat").textContent=(10+data.unlocked.length)+"/20";
-}
-function notice(t){const n=$("notice");n.textContent=t;n.style.display="block";clearTimeout(notice.t);notice.t=setTimeout(()=>n.style.display="none",2600)}
-function isUnlocked(g){return g.free||data.unlocked.includes(g.id)}
-function showTab(tab,btn){
- shownTab=tab;
- document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
- if(btn)btn.classList.add("active");
- $("catalog").classList.toggle("hidden",tab==="shop");
- $("shop").classList.toggle("hidden",tab!=="shop");
- $("gameScreen").classList.add("hidden");
- renderGames();
- if(tab==="shop")renderShop();
-}
-function renderGames(){
- const list=games.filter(g=>shownTab==="all"||(shownTab==="free"&&g.free)||(shownTab==="premium"&&!g.free));
- $("gameGrid").innerHTML=list.map(g=>`
- <article class="game-card">
-  <div class="emoji">${g.emoji}</div><h3>${g.name}</h3><p>${g.desc}</p>
-  <div class="meta"><span class="tag ${g.free?'':'premium'}">${g.free?'GRATIS':'🔒 '+g.cost+' monedas'}</span><span>${data.records[g.id]||0} pts</span></div>
-  <button class="${isUnlocked(g)?'primary':''}" onclick="launch(${g.id})">${isUnlocked(g)?'▶ Jugar':('Desbloquear · '+g.cost+' 🪙')}</button>
- </article>`).join("");
-}
-function renderShop(){
- $("shopGrid").innerHTML=games.filter(g=>!g.free).map(g=>`
- <article class="game-card"><div class="emoji">${g.emoji}</div><h3>${g.name}</h3><p>${g.desc}</p>
- <div class="meta"><span class="tag premium">${g.cost} monedas</span><span>${isUnlocked(g)?'Desbloqueado':'Prémium'}</span></div>
- <button class="${isUnlocked(g)?'':'primary'}" ${isUnlocked(g)?'disabled':''} onclick="buyGame(${g.id})">${isUnlocked(g)?'✓ Ya desbloqueado':'Desbloquear'}</button></article>`).join("");
-}
-function openShop(){showTab("shop",document.querySelectorAll("nav button")[3])}
-function buyGame(id){
- const g=games.find(x=>x.id===id);
- if(!g||g.free||isUnlocked(g))return;
- if(data.coins<g.cost){notice("No tienes suficientes monedas.");return}
- data.coins-=g.cost;data.unlocked.push(id);save();renderGames();renderShop();notice("¡"+g.name+" desbloqueado!");
+const rand=(n)=>Math.floor(Math.random()*n);
+const shuffle=a=>a.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function save(){try{localStorage.setItem("neonArcadeSave",JSON.stringify(data));}catch(e){} updateCoins();}
+function updateCoins(){$("coins").textContent=data.coins;$("gameCoins").textContent=data.coins;}
+function addCoins(n){data.coins+=n;save();}
+function schedule(fn,ms){const id=setTimeout(fn,ms);timers.push(id);return id;}
+function clearTimers(){timers.forEach(clearTimeout);timers=[];if(interval){clearInterval(interval);interval=null;}}
+function setMessage(s){$("message").textContent=s;}
+function setArena(s){$("arena").innerHTML=s;}
+function setActions(s){$("gameActions").innerHTML=s;}
+function btn(label,action,extra=""){return `<button data-act="${esc(action)}" ${extra}>${label}</button>`;}
+function showCatalog(){$("home").style.display="block";$("gameScreen").style.display="none";clearTimers();current=null;renderCatalog();}
+function setFilter(f,b){filter=f;document.querySelectorAll(".filters button").forEach(x=>x.classList.toggle("active",x===b));renderCatalog();}
+function renderCatalog(){
+ const q=($("search").value||"").trim().toLowerCase();
+ const list=games.filter(g=>{
+  const unlocked=g.cost===0||data.unlocked.includes(g.id);
+  return (filter==="all"||(filter==="free"&&g.cost===0)||(filter==="premium"&&g.cost>0)||(filter==="unlocked"&&unlocked))&&(g.name+" "+g.desc).toLowerCase().includes(q);
+ });
+ $("catalog").innerHTML=list.map(g=>{
+  const unlocked=g.cost===0||data.unlocked.includes(g.id);
+  const best=data.best[g.id]||0;
+  return `<article class="card"><div class="emoji">${g.emoji}</div><h3>${esc(g.name)}</h3><p>${esc(g.desc)}</p><div class="meta"><span>${g.cost?`<span class="lock">🔒 ${g.cost} monedas</span>`:"🟢 Gratis"}</span><span>Récord: ${best}</span></div><button class="${unlocked?"primary":""}" data-play="${g.id}">${unlocked?"Jugar":`Desbloquear · 🪙 ${g.cost}`}</button></article>`;
+ }).join("")||"<p>No se han encontrado juegos.</p>";
 }
 function dailyReward(){
- const today=new Date().toLocaleDateString("en-CA");
- if(data.lastDaily===today){notice("Ya has recogido tu recompensa de hoy.");return}
- data.lastDaily=today;data.coins+=100;save();notice("¡Has recibido 100 monedas!");
+ const day=new Date().toLocaleDateString("en-CA");
+ if(data.daily===day){alert("Ya has recogido la recompensa diaria. ¡Vuelve mañana!");return;}
+ data.daily=day;addCoins(100);alert("¡Has recibido 100 monedas!");
 }
-function demoVideo(){
- if(!confirm("Esto es una recompensa de demostración. No se mostrará un anuncio real. ¿Quieres recibir 25 monedas?"))return;
- data.coins+=25;save();notice("+25 monedas de prueba");
+function demoReward(){
+ alert("Esta es una recompensa de demostración. En una versión publicada se debe integrar un proveedor de anuncios recompensados y verificar el resultado antes de entregar monedas.");
 }
-function backToCatalog(){stopTimer();$("gameScreen").classList.add("hidden");$("catalog").classList.remove("hidden");$("shop").classList.toggle("hidden",shownTab!=="shop");renderGames()}
-function stopTimer(){if(interval)clearInterval(interval);interval=null}
-function setMessage(t){$("gameMessage").textContent=t}
-function area(html){$("playArea").innerHTML=html}
-function btn(t,fn,cls=""){const b=document.createElement("button");b.textContent=t;if(cls)b.className=cls;b.onclick=fn;return b}
-function addControls(...items){const d=document.createElement("div");d.className="controls";items.forEach(x=>d.appendChild(x));$("playArea").appendChild(d)}
-function launch(id){
+function startGame(id){
  const g=games.find(x=>x.id===id);if(!g)return;
- if(!isUnlocked(g)){buyGame(id);return}
- stopTimer();current=g;ended=true;gameScore=0;gameTime=0;gameState={};
- $("catalog").classList.add("hidden");$("shop").classList.add("hidden");$("gameScreen").classList.remove("hidden");
- $("gameTitle").textContent=g.emoji+" "+g.name;$("gameDescription").textContent=g.desc;
- $("score").textContent="0";$("timer").textContent="—";$("gameRecord").textContent=data.records[id]||0;
- setMessage("Pulsa comenzar para jugar.");
- area('<div class="big">¿Preparado?</div><p>¡Buena suerte!</p>');
- addControls(btn("▶ Comenzar",startGame,"primary"));
+ if(g.cost>0&&!data.unlocked.includes(g.id)){
+  if(data.coins<g.cost){alert("No tienes suficientes monedas. Consigue la recompensa diaria.");return;}
+  if(!confirm(`¿Desbloquear ${g.name} por ${g.cost} monedas?`))return;
+  data.coins-=g.cost;data.unlocked.push(g.id);save();
+ }
+ clearTimers();current=g;state={};ended=false;gameStartedAt=Date.now();
+ $("home").style.display="none";$("gameScreen").style.display="block";
+ $("gameTitle").textContent=g.emoji+" "+g.name;$("gameDesc").textContent=g.desc;
+ setMessage("");setActions("");renderGame();updateCoins();
 }
-function score(n=1){gameScore+=n;$("score").textContent=gameScore}
-function startClock(seconds,finish){
- stopTimer();gameTime=seconds;ended=false;$("timer").textContent=gameTime;
- interval=setInterval(()=>{gameTime--;$("timer").textContent=gameTime;if(gameTime<=0){stopTimer();finish()}},1000)
+function exitGame(){clearTimers();showCatalog();}
+function finish(message,won=true,score=0){
+ if(ended)return;ended=true;clearTimers();
+ const id=current.id;
+ if(won){addCoins(10);setMessage(message+" · +10 monedas");}
+ else setMessage(message);
+ if(score>Number(data.best[id]||0)){data.best[id]=score;save();}
+ setActions(btn("🔄 Volver a jugar","restart")+btn("🎮 Catálogo","catalog"));
 }
-function finishGame(msg){
- if(ended)return;ended=true;stopTimer();setMessage(msg+" Puntuación: "+gameScore+".");
- data.played++;data.records[current.id]=Math.max(data.records[current.id]||0,gameScore);data.record=Math.max(data.record,gameScore);
- const reward=Math.max(3,Math.min(30,Math.floor(gameScore/2)+3));data.coins+=reward;save();
- $("gameRecord").textContent=data.records[current.id];notice("¡+"+reward+" monedas por jugar!");
- addControls(btn("↻ Volver a jugar",startGame,"primary"),btn("Catálogo",backToCatalog));
-}
-function startGame(){
- stopTimer();ended=false;gameScore=0;gameState={};$("score").textContent="0";setMessage("¡A jugar!");area("");
+function restart(){if(current)startGame(current.id);}
+function renderGame(){
+ setMessage("");setActions("");
  switch(current.type){
- case"target":gameTarget();break;
- case"reaction":gameReaction();break;
- case"pairs":gamePairs();break;
- case"math":gameMath();break;
- case"dodge":gameDodge();break;
- case"catch":gameCatch();break;
- case"code":gameCode();break;
- case"typing":gameTyping();break;
- case"color":gameColor();break;
- case"higher":gameHigher();break;
- case"clicks":gameClicks();break;
- case"maze":gameMaze();break;
- case"whack":gameWhack();break;
- case"sequence":gameSequence();break;
- case"mines":gameMines();break;
- case"order":gameOrder();break;
- case"charge":gameCharge();break;
- case"quiz":gameQuiz();break;
- case"survive":gameSurvive();break;
- case"infinite":gameInfinite();break;
+ case"target":targetStart();break;
+ case"reaction":reactionStart();break;
+ case"pairs":pairsStart();break;
+ case"math":mathStart(false);break;
+ case"dodge":dodgeStart();break;
+ case"catch":catchStart();break;
+ case"code":codeStart();break;
+ case"typing":typingStart();break;
+ case"color":colorStart();break;
+ case"higher":higherStart();break;
+ case"clicks":clicksStart();break;
+ case"maze":mazeStart();break;
+ case"whack":whackStart();break;
+ case"sequence":sequenceStart();break;
+ case"mines":minesStart();break;
+ case"order":orderStart();break;
+ case"charge":chargeStart();break;
+ case"quiz":quizStart();break;
+ case"survive":surviveStart();break;
+ case"infinite":mathStart(true);break;
+ case"ttt":tttStart();break;
+ case"rps":rpsStart();break;
+ case"hangman":hangmanStart();break;
+ case"guess":guessStart();break;
+ case"pattern":patternStart();break;
+ case"scramble":scrambleStart();break;
+ case"precision":precisionStart();break;
+ case"balance":balanceStart();break;
+ case"snake":snakeStart();break;
+ case"orbital":orbitalStart();break;
  }
 }
-function gameTarget(){
- area('<p>Pulsa el botón objetivo tantas veces como puedas en 10 segundos.</p><div class="big">🌟</div>');
- const b=btn("¡PULSAR! 🌟",()=>{if(!ended){score();b.style.transform=`scale(${.9+Math.random()*.3})`}},"primary");
- addControls(b);startClock(10,()=>finishGame("¡Ronda terminada."));
+$("catalog").addEventListener("click",e=>{const b=e.target.closest("[data-play]");if(b)startGame(Number(b.dataset.play));});
+$("gameActions").addEventListener("click",e=>{
+ const b=e.target.closest("[data-act]");if(!b)return;
+ const a=b.dataset.act;
+ if(a==="restart")restart();else if(a==="catalog")exitGame();else if(current)action(a);
+});
+$("arena").addEventListener("click",e=>{
+ const b=e.target.closest("[data-act]");if(!b||!current)return;
+ action(b.dataset.act);
+});
+$("arena").addEventListener("submit",e=>{
+ if(!e.target.matches("form"))return;
+ e.preventDefault();if(current)action("submit");
+});
+$("arena").addEventListener("input",e=>{
+ if(!current)return;
+ if(e.target.id==="balanceSlider"){$("balanceValue").textContent=e.target.value;}
+ if(e.target.id==="chargeSlider"){$("chargeValue").textContent=e.target.value;}
+});
+function action(a){
+ if(ended)return;
+ switch(current.type){
+ case"target":if(a==="target"){state.count++;if(state.count>=10)finish("¡Has cazado las diez estrellas!",true,state.count);else{setMessage(`Estrellas: ${state.count}/10`);targetMove();}}break;
+ case"reaction":if(a==="react"){if(!state.ready){finish("Demasiado pronto. Espera a la señal verde.",false);return;}finish(`¡Reacción en ${Date.now()-state.greenAt} ms!`,true,Math.max(0,5000-(Date.now()-state.greenAt)));}break;
+ case"pairs":if(a.startsWith("pair-"))pairsPick(Number(a.slice(5)));break;
+ case"math":case"infinite":if(a.startsWith("answer-"))mathAnswer(Number(a.slice(7)));break;
+ case"dodge":if(a.startsWith("lane-"))dodgePick(Number(a.slice(5)));break;
+ case"catch":if(a==="catch"){if(state.active){state.count++;if(state.count>=8)finish("¡Has atrapado ocho pulsos!",true,state.count);else{setMessage(`Pulsos atrapados: ${state.count}/8`);catchPulse();}}else{state.missed++;setMessage("¡Demasiado pronto! Espera a que aparezca el pulso.");catchPulse();}}break;
+ case"code":if(a==="code-submit")codeGuess();break;
+ case"typing":if(a==="submit")typingSubmit();break;
+ case"color":if(a.startsWith("color-"))colorAnswer(a.slice(6));break;
+ case"higher":if(a==="higher"||a==="lower")higherPick(a);break;
+ case"clicks":if(a==="click")clicksHit();break;
+ case"maze":if(a.startsWith("move-"))mazeMove(a.slice(5));break;
+ case"whack":if(a.startsWith("whack-"))whackPick(Number(a.slice(6)));break;
+ case"sequence":if(a.startsWith("seq-"))sequencePick(a.slice(4));break;
+ case"mines":if(a.startsWith("mine-"))minePick(Number(a.slice(5)));break;
+ case"order":if(a.startsWith("order-"))orderPick(Number(a.slice(6)));break;
+ case"charge":if(a==="charge-stop")chargeStop();break;
+ case"quiz":if(a.startsWith("quiz-"))quizAnswer(Number(a.slice(5)));break;
+ case"survive":if(a==="guard"||a==="dodge")survivePick(a);break;
+ case"ttt":if(a.startsWith("ttt-"))tttPick(Number(a.slice(4)));break;
+ case"rps":if(a.startsWith("rps-"))rpsPick(a.slice(4));break;
+ case"hangman":if(a.startsWith("letter-"))hangmanPick(a.slice(7));break;
+ case"guess":if(a==="submit")guessSubmit();break;
+ case"pattern":if(a.startsWith("pattern-"))patternPick(Number(a.slice(8)));break;
+ case"scramble":if(a==="submit")scrambleSubmit();break;
+ case"precision":if(a==="precision-start")precisionStartClock();if(a==="precision-stop")precisionStop();break;
+ case"balance":if(a==="balance-check")balanceCheck();break;
+ case"snake":if(a.startsWith("snake-"))snakeMove(a.slice(6));break;
+ case"orbital":if(a.startsWith("sector-"))orbitalPick(Number(a.slice(7)));break;
+ }
 }
-function gameReaction(){
- area('<div class="big" id="signal">🔴 ROJO</div><p>Cuando aparezca VERDE, pulsa lo más rápido posible.</p>');
- const b=btn("Esperar señal",()=>{if(ended)return;if(!gameState.ready){setMessage("Todavía no. ¡Espera al verde!");return}score(Math.max(1,Math.floor(1000/Math.max(100,Date.now()-gameState.time))));finishGame("¡Buena reacción!")});
- addControls(b);gameState.ready=false;
- setTimeout(()=>{if(ended)return;gameState.ready=true;gameState.time=Date.now();$("signal").textContent="🟢 ¡AHORA!";b.textContent="¡PULSAR YA!";},1200+Math.random()*2500);
- startClock(8,()=>finishGame("Se acabó el tiempo."));
-}
-function gamePairs(){
- const symbols=["🌙","🚀","⭐","🪐","👾","💎","🌈","🔥"];
- const deck=[...symbols,...symbols].sort(()=>Math.random()-.5);gameState.open=[];gameState.matched=[];
- area('<p>Encuentra las ocho parejas.</p><div class="board" id="pairBoard" style="grid-template-columns:repeat(4,1fr)"></div>');
- deck.forEach((s,i)=>{const b=btn("❔",()=>{if(ended||gameState.matched.includes(i)||gameState.open.includes(i)||gameState.open.length===2)return;b.textContent=s;gameState.open.push(i);if(gameState.open.length===2){const[a,c]=gameState.open;if(deck[a]===deck[c]){gameState.matched.push(a,c);score(2);gameState.open=[];if(gameState.matched.length===16)finishGame("¡Todas las parejas encontradas!")}else setTimeout(()=>{if(!ended){document.querySelectorAll(".paircard").forEach(x=>{if(!gameState.matched.includes(+x.dataset.i))x.textContent="❔"});gameState.open=[]}},650)}});b.className="tile paircard";b.dataset.i=i;$("pairBoard").appendChild(b)});
- startClock(60,()=>finishGame("¡Tiempo agotado."));
-}
-function gameMath(){
- let make=()=>{let a=1+Math.floor(Math.random()*20),b=1+Math.floor(Math.random()*15),op=Math.random()<.5?"+":"−";return{q:`${a} ${op} ${b} = ?`,ans:op==="+"?a+b:a-b}};
- gameState.q=make();
- area('<div class="big" id="question"></div><input id="answer" type="number" inputmode="numeric" placeholder="Respuesta"><div class="controls"><button id="submitAnswer" class="primary">Comprobar</button></div>');
- function next(){gameState.q=make();$("question").textContent=gameState.q.q;$("answer").value="";}
- next();
- $("submitAnswer").onclick=()=>{if(ended)return;if(+$("answer").value===gameState.q.ans){score(2);next();setMessage("¡Correcto!")}else setMessage("Prueba otra vez.")};
- $("answer").onkeydown=e=>{if(e.key==="Enter")$("submitAnswer").click()};
- startClock(30,()=>finishGame("Fin del reto matemático."));
-}
-function gameDodge(){
- let pos=1,round=0;
- area('<p>En cada ronda, elige una de las tres posiciones. Evita la zona roja.</p><div class="big" id="dodgeInfo">Ronda 1</div><div class="controls" id="dodgeButtons"></div>');
- function roundStart(){if(ended)return;round++;if(round>12){finishGame("¡Has cruzado el campo!");return}const danger=Math.floor(Math.random()*3);$("dodgeInfo").textContent="Ronda "+round+" · Elige una zona";$("dodgeButtons").innerHTML="";for(let i=0;i<3;i++){const b=btn(["⬅️","⬆️","➡️"][i],()=>{if(ended)return;if(i===danger){finishGame("Un meteorito te ha alcanzado.");return}score(2);roundStart()});$("dodgeButtons").appendChild(b)}}
- roundStart();startClock(35,()=>finishGame("Se acabó el tiempo."));
-}
-function gameCatch(){
- let round=0;
- area('<p>Elige los cristales azules. Evita las trampas rojas.</p><div class="big" id="catchObj">💎</div><div class="controls" id="catchButtons"></div>');
- function next(){if(ended)return;if(round++>=12){finishGame("¡Captura completada!");return}const good=Math.random()<.68;$("catchObj").textContent=good?"💎":"🟥";$("catchButtons").innerHTML="";["Atrapar","Dejar pasar"].forEach((t,i)=>{const b=btn(t,()=>{if((good&&i===0)||(!good&&i===1)){score(2);next()}else finishGame("¡Has caído en la trampa!")});$("catchButtons").appendChild(b)})}
- next();startClock(30,()=>finishGame("Fin de la captura."));
-}
-function gameCode(){
- const code=String(100+Math.floor(Math.random()*900));let tries=0;
- area('<p>Adivina el código secreto de tres cifras. Tienes seis intentos.</p><input id="codeInput" maxlength="3" inputmode="numeric" placeholder="000"><div class="controls"><button id="codeTry" class="primary">Probar código</button></div><div id="codeHints"></div>');
- $("codeTry").onclick=()=>{if(ended)return;const v=$("codeInput").value;if(!/^\d{3}$/.test(v)){setMessage("Escribe exactamente tres cifras.");return}tries++;if(v===code){score(Math.max(5,20-tries*2));finishGame("¡Código descifrado!");return}let exact=0,near=0;for(let i=0;i<3;i++){if(v[i]===code[i])exact++;else if(code.includes(v[i]))near++}$("codeHints").textContent=`Intento ${tries}: ${exact} cifra(s) en posición correcta, ${near} en posición incorrecta.`;if(tries>=6)finishGame("El código era "+code+".");};
- startClock(45,()=>finishGame("Se acabó el tiempo. Código: "+code+"."));
-}
-function gameTyping(){
- const words=["neon","galaxia","energia","planeta","estrella","pixel","universo","arcade","cosmos","cometa"];let word="";
- area('<p>Escribe cada palabra correctamente.</p><div class="big" id="typeWord"></div><input id="typeInput" autocomplete="off" placeholder="Escribe aquí"><div class="controls"><button id="typeCheck" class="primary">Comprobar</button></div>');
- function next(){word=words[Math.floor(Math.random()*words.length)];$("typeWord").textContent=word;$("typeInput").value="";$("typeInput").focus()}
- next();$("typeCheck").onclick=()=>{if(ended)return;if($("typeInput").value.trim().toLowerCase()===word){score(2);next()}else setMessage("No coincide. Inténtalo de nuevo.")};
- $("typeInput").onkeydown=e=>{if(e.key==="Enter")$("typeCheck").click()};
- startClock(30,()=>finishGame("¡Fin de la prueba de escritura."));
-}
-function gameColor(){
- const colors=[{n:"ROJO",c:"#fb7185"},{n:"AZUL",c:"#38bdf8"},{n:"VERDE",c:"#4ade80"},{n:"AMARILLO",c:"#facc15"}];let target;
- area('<p>Elige el botón que coincide con el color de la palabra, no con su significado.</p><div class="big" id="colorWord"></div><div class="controls" id="colorBtns"></div>');
- function next(){target=colors[Math.floor(Math.random()*4)];$("colorWord").textContent=target.n;$("colorWord").style.color=colors[Math.floor(Math.random()*4)].c;$("colorBtns").innerHTML="";colors.forEach(c=>{const b=btn(c.n,()=>{if(ended)return;if(c.n===target.n){score(2);next()}else setMessage("¡Fíjate en el texto!")});b.style.borderColor=c.c;$("colorBtns").appendChild(b)})}
- next();startClock(25,()=>finishGame("¡Fin de la prueba de color."));
-}
-function gameHigher(){
- let n=1+Math.floor(Math.random()*10),round=0;
- area('<p>¿Será mayor o menor el siguiente número?</p><div class="big" id="higherNum"></div><div class="controls" id="higherBtns"></div>');
- function next(){if(ended)return;if(round++>=10){finishGame("¡Ronda completada!");return}$("higherNum").textContent=n;$("higherBtns").innerHTML="";["Mayor","Menor"].forEach((t,i)=>{const b=btn(t,()=>{const m=1+Math.floor(Math.random()*10);if((i===0&&m>n)||(i===1&&m<n)){score(2);n=m;next()}else{n=m;finishGame("El número siguiente era "+m+".")}});$("higherBtns").appendChild(b)})}
- next();startClock(30,()=>finishGame("Fin de la predicción."));
-}
-function gameClicks(){
- area('<p>¡Pulsa tan rápido como puedas durante 10 segundos!</p><div class="big">🖱️</div>');
- addControls(btn("¡CLIC!",()=>{if(!ended)score(1)},"primary"));
- startClock(10,()=>finishGame("¡Ronda de clics terminada."));
-}
-function gameMaze(){
- let p=0,goal=15;const walls=new Set([1,4,5,7,9,10,13]);walls.delete(15);
- area('<p>Muévete por el tablero desde 🟢 hasta 🏁. Las casillas oscuras son muros.</p><div id="mazeBoard" class="board" style="grid-template-columns:repeat(4,1fr)"></div><div class="controls" id="mazeControls"></div>');
- function draw(){const board=$("mazeBoard");board.innerHTML="";for(let i=0;i<16;i++){const b=btn(i===p?"🟢":i===goal?"🏁":walls.has(i)?"⬛":"·",()=>move(i));b.className="tile";board.appendChild(b)}}
- function move(i){if(ended||Math.abs(Math.floor(i/4)-Math.floor(p/4))+Math.abs(i%4-p%4)!==1||walls.has(i))return;p=i;score(1);draw();if(p===goal)finishGame("¡Has escapado del laberinto!")}
- const dirs=[["⬆️",-4],["⬅️",-1],["⬇️",4],["➡️",1]];
- dirs.forEach(([t,d])=>{$("mazeControls").appendChild(btn(t,()=>{let i=p+d;if(i<0||i>15||(d===1&&p%4===3)||(d===-1&&p%4===0))return;move(i)}))});
- draw();startClock(45,()=>finishGame("Te has quedado en el laberinto."));
-}
-function gameWhack(){
- let round=0;
- area('<p>¡Pulsa los bichos, evita las bombas!</p><div class="big" id="whackTarget"></div><div class="controls" id="whackButtons"></div>');
- function next(){if(ended)return;if(round++>=15){finishGame("¡Has limpiado la pantalla!");return}const good=Math.random()>.25;$("whackTarget").textContent=good?"🐛":"💣";$("whackButtons").innerHTML="";const b=btn(good?"¡Aplastar!":"¡Evitar!",()=>{if(ended)return;if(good){score(2);next()}else finishGame("¡Era una bomba!")});$("whackButtons").appendChild(b);if(!good){$("whackButtons").appendChild(btn("No pulsar",()=>{score(2);next()}))}}
- next();startClock(25,()=>finishGame("Fin de la caza."));
-}
-function gameSequence(){
- const seq=[];let step=0;
- area('<p>Memoriza la secuencia de colores y repítela.</p><div class="big" id="seqDisplay">Observa...</div><div class="controls" id="seqBtns"></div>');
- const cols=[["🔴","#fb7185"],["🔵","#38bdf8"],["🟢","#4ade80"],["🟡","#facc15"]];
- function next(){if(ended)return;seq.push(Math.floor(Math.random()*4));step=0;$("seqDisplay").textContent=seq.map(x=>cols[x][0]).join(" ");$("seqBtns").innerHTML="";setTimeout(()=>{if(ended)return;$("seqDisplay").textContent="¡Repítela!";cols.forEach((c,i)=>{const b=btn(c[0],()=>{if(ended)return;if(seq[step]!==i){finishGame("Secuencia incorrecta.");return}step++;if(step===seq.length){score(seq.length*2);next()}});b.style.borderColor=c[1];$("seqBtns").appendChild(b)})},Math.min(2200,700+seq.length*180))}
- next();startClock(40,()=>finishGame("¡Tiempo agotado."));
-}
-function gameMines(){
- let safe=0;const mine=Math.floor(Math.random()*16);
- area('<p>Encuentra ocho casillas seguras. ¡Cuidado con la mina!</p><div id="mineBoard" class="board" style="grid-template-columns:repeat(4,1fr)"></div>');
- for(let i=0;i<16;i++){const b=btn("?",()=>{if(ended||b.disabled)return;b.disabled=true;if(i===mine){b.textContent="💣";b.classList.add("bad");finishGame("¡Has tocado una mina!");return}b.textContent="💎";b.classList.add("good");safe++;score(2);if(safe===8)finishGame("¡Has encontrado ocho casillas seguras!")});b.className="tile";$("mineBoard").appendChild(b)}
- startClock(30,()=>finishGame("Se acabó el tiempo."));
-}
-function gameOrder(){
- let nums=[1,2,3,4,5,6,7,8,9].sort(()=>Math.random()-.5),next=1;
- area('<p>Pulsa los números en orden ascendente del 1 al 9.</p><div id="orderBoard" class="board" style="grid-template-columns:repeat(3,1fr)"></div>');
- nums.forEach(n=>{const b=btn(n,()=>{if(ended)return;if(n===next){b.disabled=true;b.classList.add("good");score(1);next++;if(next===10)finishGame("¡Orden perfecto!")}else setMessage("Busca el número "+next+".")});b.className="tile";$("orderBoard").appendChild(b)});
- startClock(35,()=>finishGame("Fin del orden numérico."));
-}
-function gameCharge(){
- let charge=0;
- area('<p>Pulsa para cargar el reactor hasta el 100% antes de que se agote el tiempo.</p><div class="big" id="chargeMeter">0%</div><div class="controls" id="chargeBtns"></div>');
- const b=btn("⚡ CARGAR",()=>{if(ended)return;charge=Math.min(100,charge+Math.floor(4+Math.random()*9));$("chargeMeter").textContent=charge+"%";score(1);if(charge>=100)finishGame("¡Reactor cargado!")},"primary");
- addControls(b);startClock(20,()=>finishGame("Carga final: "+charge+"%."));
-}
-function gameQuiz(){
- const qs=[
- ["¿Cuál es el planeta rojo?","Marte",["Venus","Marte","Júpiter"]],
- ["¿Cuántos lados tiene un hexágono?","6",["5","6","8"]],
- ["¿Qué estrella ilumina la Tierra?","El Sol",["Sirio","La Luna","El Sol"]],
- ["¿Cuánto es 8 × 7?","56",["54","56","64"]],
- ["¿Qué animal es un mamífero?","Delfín",["Tiburón","Delfín","Pulpo"]],
- ["¿Cuál es el océano más grande?","Pacífico",["Atlántico","Índico","Pacífico"]],
- ["¿Cuántos minutos tiene una hora?","60",["30","60","100"]]
- ];let i=0;
- area('<div class="big" id="quizQ"></div><div class="controls" id="quizOpts"></div>');
- function next(){if(ended)return;if(i>=qs.length){finishGame("¡Trivia completada!");return}const q=qs[i++];$("quizQ").textContent=q[0];$("quizOpts").innerHTML="";q[2].sort(()=>Math.random()-.5).forEach(a=>$("quizOpts").appendChild(btn(a,()=>{if(ended)return;if(a===q[1]){score(3);next()}else finishGame("Respuesta incorrecta. La respuesta era "+q[1]+".")})))}
- next();startClock(45,()=>finishGame("Fin de la trivia."));
-}
-function gameSurvive(){
- let r=0;
- area('<p>Sobrevive a diez decisiones. Elige la acción segura en cada escenario.</p><div class="big" id="surviveQ"></div><div class="controls" id="surviveOpts"></div>');
- const scenarios=[
- {q:"Un meteorito se acerca.",good:"Esquivar",bad:"Quedarse quieto"},
- {q:"Se enciende una luz roja.",good:"Frenar",bad:"Acelerar"},
- {q:"El suelo empieza a temblar.",good:"Buscar refugio",bad:"Saltar sin mirar"},
- {q:"La energía está baja.",good:"Recargar",bad:"Ignorarla"},
- {q:"Hay una puerta bloqueada.",good:"Buscar una llave",bad:"Golpear la pantalla"}
- ];
- function next(){if(ended)return;if(r>=10){finishGame("¡Has sobrevivido!");return}const s=scenarios[Math.floor(Math.random()*scenarios.length)];$("surviveQ").textContent=s.q;$("surviveOpts").innerHTML="";[s.good,s.bad].sort(()=>Math.random()-.5).forEach(a=>$("surviveOpts").appendChild(btn(a,()=>{if(ended)return;if(a===s.good){r++;score(2);next()}else finishGame("Decisión equivocada.")})))}
- next();startClock(35,()=>finishGame("Se acabó el tiempo."));
-}
-function gameInfinite(){
- let r=0;
- area('<p>Desafío mixto: resuelve cada prueba rápida para sumar puntos.</p><div class="big" id="infQ"></div><div class="controls" id="infOpts"></div>');
- function next(){if(ended)return;if(r>=12){finishGame("¡Has superado el desafío mixto!");return}r++;const a=1+Math.floor(Math.random()*9),b=1+Math.floor(Math.random()*9),ans=a+b,choices=[ans,ans+1+Math.floor(Math.random()*3),Math.max(1,ans-1-Math.floor(Math.random()*2))].sort(()=>Math.random()-.5);$("infQ").textContent=`Reto ${r}/12: ${a} + ${b} = ?`;$("infOpts").innerHTML="";choices.forEach(c=>$("infOpts").appendChild(btn(c,()=>{if(ended)return;if(c===ans){score(2);next()}else finishGame("La respuesta era "+ans+".")})))}
- next();startClock(40,()=>finishGame("Fin del desafío mixto."));
-}
-updateStats();renderGames();renderShop();
+
+/* 1. Cazador de estrellas */
+function targetStart(){state.count=0;setArena('<div class="center"><div class="big" id="targetCount">0 / 10</div><div id="targetArea" style="height:250px;position:relative;border:1px dashed #50416f;border-radius:15px;background:#0d0b1c;overflow:hidden"></div></div>');targetMove();}
+function targetMove(){const area=$("targetArea");if(!area)return;const x=rand(Math.max(1,area.clientWidth-55)),y=rand(190);area.innerHTML=`<button data-act="target" style="position:absolute;left:${x}px;top:${y}px;font-size:26px;padding:6px 10px">🌟</button>`;$("targetCount").textContent=state.count+" / 10";}
+
+/* 2. Duelo de reflejos */
+function reactionStart(){state.ready=false;setArena('<div class="center"><div class="big">⚡</div><p>Espera a que cambie la señal.</p><button class="bigbtn" id="reactButton" data-act="react">ESPERA...</button></div>');const delay=1200+rand(2800);schedule(()=>{if(ended||!current||current.type!=="reaction")return;state.ready=true;state.greenAt=Date.now();$("reactButton").textContent="¡AHORA!";$("reactButton").style.background="#166534";},delay);}
+
+/* 3. Memoria cósmica */
+function pairsStart(){state.cards=shuffle(["🌙","🌙","⭐","⭐","🚀","🚀","🪐","🪐"]);state.open=[];state.matched=[];state.moves=0;setArena('<div class="center">Encuentra las cuatro parejas.</div><div class="tiles" id="pairGrid"></div>');pairsDraw();}
+function pairsDraw(){const el=$("pairGrid");if(!el)return;el.innerHTML=state.cards.map((v,i)=>`<button data-act="pair-${i}" ${state.matched.includes(i)?"disabled":""}>${state.matched.includes(i)||state.open.includes(i)?v:"❔"}</button>`).join("");}
+function pairsPick(i){if(state.open.includes(i)||state.matched.includes(i))return;state.open.push(i);pairsDraw();if(state.open.length===2){state.moves++;if(state.cards[state.open[0]]===state.cards[state.open[1]]){state.matched.push(...state.open);state.open=[];pairsDraw();if(state.matched.length===8)finish("¡Parejas completadas en "+state.moves+" intentos!",true,Math.max(0,100-state.moves));}else{schedule(()=>{if(ended)return;state.open=[];pairsDraw();},700);}}}
+
+/* 4 y 20. Retos matemáticos */
+function mathStart(infinite){state.infinite=infinite;state.round=0;state.correct=0;mathNext();}
+function mathNext(){let x=2+rand(12),y=1+rand(10),op=rand(3),ans;if(op===0){state.question=`${x} + ${y}`;ans=x+y;}else if(op===1){if(x<y)[x,y]=[y,x];state.question=`${x} − ${y}`;ans=x-y;}else{state.question=`${x} × ${y}`;ans=x*y;}state.answer=ans;const opts=shuffle([...new Set([ans,ans+1+rand(5),Math.max(0,ans-1-rand(4)),ans+2+rand(8)])]).slice(0,4);if(!opts.includes(ans))opts[0]=ans;state.opts=shuffle(opts);setArena(`<div class="center"><div class="small">Pregunta ${state.round+1}${state.infinite?" · modo infinito":" de 5"}</div><div class="big">${state.question} = ?</div><div class="rowbtn">${state.opts.map((n,i)=>btn(n,"answer-"+n)).join("")}</div></div>`);}
+function mathAnswer(n){if(n===state.answer){state.correct++;state.round++;if(state.infinite&&state.round>=10){finish("¡Has completado diez niveles!",true,state.correct);return;}if(!state.infinite&&state.round>=5){finish("¡Cinco respuestas correctas!",true,state.correct);return;}mathNext();}else{finish("Respuesta incorrecta. ¡Inténtalo de nuevo!",false,state.correct);}}
+
+/* 5. Esquiva meteoritos */
+function dodgeStart(){state.round=0;setArena('<div class="center"><div class="big">☄️</div><p id="dodgeText">Escoge uno de los tres carriles.</p><div class="rowbtn">'+[0,1,2].map(i=>btn(["⬅️ Carril izquierdo","⬆️ Carril central","➡️ Carril derecho"][i],"lane-"+i)).join("")+'</div></div>');}
+function dodgePick(l){const danger=rand(3);if(l===danger){finish("Un meteorito impactó en tu carril.",false,state.round);return;}state.round++;if(state.round>=5){finish("¡Has esquivado cinco meteoritos!",true,state.round);return;}$("dodgeText").textContent="¡A salvo! Ronda "+(state.round+1)+"/5. Vuelve a elegir.";}
+
+/* 6. Atrapa-neones */
+function catchStart(){state.count=0;state.missed=0;setArena('<div class="center"><div class="big" id="catchSymbol">🌑</div><p>Espera al círculo verde y pulsa «ATRAPAR».</p><button class="bigbtn" data-act="catch">ATRAPAR</button></div>');catchPulse();}
+function catchPulse(){state.active=false;const sym=$("catchSymbol");if(sym)sym.textContent="🌑";schedule(()=>{if(ended||!current||current.type!=="catch")return;state.active=true;const s=$("catchSymbol");if(s)s.textContent="🟢";schedule(()=>{if(ended||!current||current.type!=="catch")return;state.active=false;const el=$("catchSymbol");if(el)el.textContent="🌑";catchPulse();},850);},700+rand(1500));}
+
+/* 7. Código secreto */
+function codeStart(){state.secret=String(100+rand(900));state.tries=0;setArena('<div class="center"><div class="big">🔐 ? ? ?</div><p>Prueba un código de tres cifras. Recibirás una pista.</p><form id="codeForm"><input class="field" id="codeInput" inputmode="numeric" maxlength="3" pattern="[0-9]{3}" placeholder="Ej. 482" required><button class="primary">Probar código</button></form><p id="codeHint"></p></div>');}
+function codeGuess(){const input=$("codeInput");const n=input.value;if(!/^\d{3}$/.test(n)){setMessage("Escribe exactamente tres cifras.");return;}state.tries++;if(n===state.secret){finish("¡Código descifrado en "+state.tries+" intentos!",true,Math.max(0,7-state.tries));return;}let correct=0;for(let i=0;i<3;i++)if(n[i]===state.secret[i])correct++;$("codeHint").textContent=`Cifras en posición correcta: ${correct}. Intentos: ${state.tries}/7.`;input.value="";if(state.tries>=7)finish("Se agotaron los intentos. Código: "+state.secret,false);}
+
+/* 8. Teclea a toda velocidad */
+function typingStart(){state.words=shuffle(["galaxia","cometa","energia","nebulosa","pixel","universo","cohete","estrella","orbita","planeta"]);state.index=0;setArena('<div class="center"><div class="small">Palabra <span id="typeCount">1</span>/5</div><div class="big" id="typeWord"></div><form><input class="field" id="typeInput" autocomplete="off" placeholder="Escribe la palabra" required><button class="primary">Enviar</button></form></div>');typingShow();}
+function typingShow(){$("typeWord").textContent=state.words[state.index];$("typeCount").textContent=state.index+1;$("typeInput").value="";$("typeInput").focus();}
+function typingSubmit(){if($("typeInput").value.trim().toLowerCase()!==state.words[state.index]){finish("Palabra incorrecta. Se acabó la ronda.",false,state.index);return;}state.index++;if(state.index>=5)finish("¡Has escrito cinco palabras correctamente!",true,state.index);else typingShow();}
+
+/* 9. Maestro del color */
+const colorNames=["ROJO","AZUL","VERDE","MORADO","AMARILLO"];
+const colorHex={"ROJO":"#fb7185","AZUL":"#38bdf8","VERDE":"#4ade80","MORADO":"#c084fc","AMARILLO":"#facc15"};
+function colorStart(){state.round=0;state.correct=0;colorNext();}
+function colorNext(){state.answer=colorNames[rand(colorNames.length)];const text=colorNames[rand(colorNames.length)];setArena(`<div class="center"><p>¿De qué color es el texto?</p><div class="big" style="color:${colorHex[state.answer]}">${text}</div><div class="rowbtn">${shuffle([...colorNames]).map(c=>btn(c,"color-"+c)).join("")}</div><div>Ronda ${state.round+1}/5</div></div>`);}
+function colorAnswer(c){if(c!==state.answer){finish("Color incorrecto.",false,state.correct);return;}state.correct++;state.round++;if(state.round>=5)finish("¡Has identificado los cinco colores!",true,state.correct);else colorNext();}
+
+/* 10. Mayor o menor */
+function higherStart(){state.current=1+rand(10);state.round=0;setArena('<div class="center"><p>El número actual es:</p><div class="big" id="higherNum"></div><p>¿El siguiente número será mayor o menor?</p><div class="rowbtn">'+btn("📈 Mayor","higher")+btn("📉 Menor","lower")+'</div><div id="higherRound"></div></div>');higherDraw();}
+function higherDraw(){$("higherNum").textContent=state.current;$("higherRound").textContent=`Ronda ${state.round+1}/5`;}
+function higherPick(choice){const next=1+rand(10);if(next===state.current){setMessage(`Salió ${next}. Empate: se repite la ronda.`);return;}const good=choice==="higher"?next>state.current:next<state.current;if(!good){finish(`El número siguiente fue ${next}.`,false,state.round);return;}state.current=next;state.round++;if(state.round>=5){finish("¡Cinco predicciones correctas!",true,state.round);return;}higherDraw();}
+
+/* 11. Lluvia de clics */
+function clicksStart(){state.count=0;state.left=10;setArena('<div class="center"><div class="big" id="clickScore">0</div><p>Haz clic lo más rápido posible.</p><button class="bigbtn" data-act="click">¡CLIC!</button><p>Tiempo: <span id="clickTime">10</span> s</p></div>');interval=setInterval(()=>{if(ended)return;state.left--;if($("clickTime"))$("clickTime").textContent=state.left;if(state.left<=0)finish(`Has conseguido ${state.count} clics.`,true,state.count);},1000);}
+function clicksHit(){state.count++;if($("clickScore"))$("clickScore").textContent=state.count;}
+
+/* 12. Laberinto */
+const mazeWalls=[1,4,5,7,9,10,13];
+function mazeStart(){state.pos=0;setArena('<div class="center">Llega a la casilla 🏁 sin atravesar paredes.</div><div class="tiles" id="mazeGrid"></div><div class="rowbtn">'+btn("⬆️","move-up")+btn("⬅️","move-left")+btn("⬇️","move-down")+btn("➡️","move-right")+'</div>');mazeDraw();}
+function mazeDraw(){const el=$("mazeGrid");if(!el)return;el.innerHTML=Array.from({length:16},(_,i)=>`<button disabled style="background:${i===state.pos?"#2563eb":mazeWalls.includes(i)?"#090817":i===15?"#14532d":"#292344"}">${i===state.pos?"🧍":mazeWalls.includes(i)?"⬛":i===15?"🏁":"·"}</button>`).join("");}
+function mazeMove(d){let r=Math.floor(state.pos/4),c=state.pos%4;if(d==="move-up")r--;if(d==="move-down")r++;if(d==="move-left")c--;if(d==="move-right")c++;if(r<0||r>3||c<0||c>3)return;const n=r*4+c;if(mazeWalls.includes(n)){setMessage("¡Pared! Busca otro camino.");return;}state.pos=n;mazeDraw();if(n===15)finish("¡Has escapado del laberinto!",true,1);}
+
+/* 13. Caza-bichos */
+function whackStart(){state.count=0;state.round=0;whackNext();}
+function whackNext(){state.target=rand(9);setArena(`<div class="center">Atrapa diez objetivos. Aciertos: ${state.count}/10</div><div class="tiles three">${Array.from({length:9},(_,i)=>btn(i===state.target?"🐛":"·","whack-"+i)).join("")}</div>`);}
+function whackPick(i){if(i!==state.target){setMessage("¡Fallaste el objetivo!");return;}state.count++;if(state.count>=10){finish("¡Has atrapado los diez bichos!",true,state.count);return;}whackNext();}
+
+/* 14. Eco de memoria */
+function sequenceStart(){state.seq=Array.from({length:5},()=>["🔴","🔵","🟢","🟡"][rand(4)]);state.index=0;setArena('<div class="center"><p>Memoriza la secuencia y repítela en orden.</p><div class="big" id="seqDisplay"></div><div id="seqButtons" class="rowbtn"></div></div>');$("seqDisplay").textContent=state.seq.join(" ");schedule(()=>{if(ended)return;$("seqDisplay").textContent="❔ ❔ ❔ ❔ ❔";$("seqButtons").innerHTML=["🔴","🔵","🟢","🟡"].map(c=>btn(c,"seq-"+c)).join("");},2500);}
+function sequencePick(c){if(c!==state.seq[state.index]){finish("La secuencia era: "+state.seq.join(" "),false,state.index);return;}state.index++;if(state.index>=state.seq.length){finish("¡Secuencia recordada!",true,state.index);return;}setMessage("Correcto: "+state.index+"/"+state.seq.length);}
+
+/* 15. Campo minado */
+function minesStart(){state.mines=shuffle(Array.from({length:16},(_,i)=>i)).slice(0,3);state.opened=[];setArena('<div class="center">Descubre 13 casillas seguras. Hay tres minas.</div><div class="tiles" id="mineGrid"></div>');minesDraw();}
+function minesDraw(){const el=$("mineGrid");if(!el)return;el.innerHTML=Array.from({length:16},(_,i)=>`<button data-act="mine-${i}" ${state.opened.includes(i)?"disabled":""}>${state.opened.includes(i)?"✓":"?"}</button>`).join("");}
+function minePick(i){if(state.mines.includes(i)){finish("¡Has encontrado una mina!",false,state.opened.length);return;}state.opened.push(i);minesDraw();if(state.opened.length>=13)finish("¡Campo despejado!",true,state.opened.length);}
+
+/* 16. Orden numérico */
+function orderStart(){state.nums=shuffle([1,2,3,4,5]);state.next=1;setArena('<div class="center">Pulsa los números del 1 al 5 en orden.</div><div class="tiles" id="orderGrid"></div>');orderDraw();}
+function orderDraw(){const el=$("orderGrid");if(el)el.innerHTML=state.nums.map(n=>btn(n,"order-"+n,n<state.next?"disabled":"")).join("");}
+function orderPick(n){if(n!==state.next){finish("Orden incorrecto. Empieza otra partida.",false,state.next-1);return;}state.next++;orderDraw();if(state.next>5)finish("¡Orden perfecto!",true,5);}
+
+/* 17. Pulso de energía */
+function chargeStart(){state.charge=0;state.dir=1;setArena('<div class="center"><p>Detén la carga entre 45 y 55.</p><div class="big" id="chargeValue">0</div><div class="bar"><div id="chargeBar"></div></div><button class="bigbtn" data-act="charge-stop">DETENER</button></div>');interval=setInterval(()=>{if(ended)return;state.charge+=state.dir*3;if(state.charge>=100){state.charge=100;state.dir=-1;}if(state.charge<=0){state.charge=0;state.dir=1;}if($("chargeValue"))$("chargeValue").textContent=state.charge;if($("chargeBar"))$("chargeBar").style.width=state.charge+"%";},65);}
+function chargeStop(){const v=state.charge;if(v>=45&&v<=55)finish("¡Pulso perfecto en "+v+"!",true,100-Math.abs(50-v));else finish("Te detuviste en "+v+". La zona segura era 45–55.",false);}
+
+/* 18. Trivia */
+const questions=[
+["¿Cuál es el planeta rojo?","Marte",["Marte","Venus","Saturno","Mercurio"]],
+["¿Cuántos lados tiene un hexágono?","6",["5","6","7","8"]],
+["¿Cuál es el océano más grande?","Pacífico",["Índico","Ártico","Pacífico","Atlántico"]],
+["¿Cuánto es 9 × 7?","63",["56","63","72","49"]],
+["¿Qué estrella ilumina la Tierra?","El Sol",["Sirio","El Sol","Vega","Polaris"]],
+["¿Cuántos minutos hay en una hora?","60",["30","45","60","90"]],
+["¿Qué gas absorben las plantas principalmente?","Dióxido de carbono",["Oxígeno","Helio","Dióxido de carbono","Hidrógeno"]]
+];
+function quizStart(){state.qs=shuffle(questions).slice(0,5);state.round=0;state.score=0;quizNext();}
+function quizNext(){const q=state.qs[state.round];setArena(`<div class="center"><div class="small">Pregunta ${state.round+1}/5</div><div class="big" style="font-size:24px">${esc(q[0])}</div><div class="rowbtn">${shuffle(q[2]).map((a,i)=>btn(esc(a),"quiz-"+i)).join("")}</div></div>`);state.options=Array.from($("arena").querySelectorAll("[data-act^=quiz-]")).map(b=>b.textContent);}
+function quizAnswer(i){const q=state.qs[state.round];const chosen=state.options[i];if(chosen===q[1])state.score++;state.round++;if(state.round>=5){if(state.score>=3)finish(`Resultado: ${state.score}/5. ¡Buen trabajo!`,true,state.score);else finish(`Resultado: ${state.score}/5. Necesitas tres aciertos para ganar monedas.`,false,state.score);return;}quizNext();}
+
+/* 19. Supervivencia */
+function surviveStart(){state.round=0;state.hp=3;setArena('<div class="center"><div class="big">❤️ ❤️ ❤️</div><p>Elige defensa o evasión contra cada ataque.</p><div class="rowbtn">'+btn("🛡️ Defender","guard")+btn("💨 Esquivar","dodge")+'</div><p id="surviveRound">Ronda 1/5</p></div>');}
+function survivePick(choice){const attack=Math.random()<.5?"guard":"dodge";if(choice!==attack){state.hp--;setMessage("La defensa falló. Vidas: "+state.hp);}else setMessage("¡Buena defensa!");state.round++;if(state.hp<=0){finish("La nave ha sido alcanzada.",false,state.round);return;}if(state.round>=5){finish("¡Has sobrevivido a los cinco ataques!",true,state.round);return;}$("surviveRound").textContent=`Ronda ${state.round+1}/5 · Vidas: ${state.hp}`;}
+
+/* 21. Tres en raya */
+function tttStart(){state.board=Array(9).fill("");state.turn=true;setArena('<div class="center">Tú eres ❌. El ordenador es ⭕.</div><div class="tiles three" id="tttGrid"></div>');tttDraw();}
+function tttDraw(){const el=$("tttGrid");if(el)el.innerHTML=state.board.map((v,i)=>btn(v||"·","ttt-"+i,v?"disabled":"")).join("");}
+function tttWinner(b){for(const [a,c,d] of [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]])if(b[a]&&b[a]===b[c]&&b[a]===b[d])return b[a];return b.every(Boolean)?"draw":"";}
+function tttPick(i){if(state.board[i])return;state.board[i]="❌";let w=tttWinner(state.board);if(w){tttDraw();finish(w==="❌"?"¡Has ganado!": "Empate.",w==="❌",w==="❌"?1:0);return;}const free=state.board.map((v,j)=>v?null:j).filter(v=>v!==null);if(!free.length){finish("Empate.",false);return;}state.board[free[rand(free.length)]]="⭕";w=tttWinner(state.board);tttDraw();if(w)finish(w==="❌"?"¡Has ganado!":w==="⭕"?"El ordenador ha ganado.":"Empate.",w==="❌",w==="❌"?1:0);}
+
+/* 22. Piedra, papel o tijera */
+function rpsStart(){state.round=0;state.score=0;setArena('<div class="center"><div class="big" id="rpsResult">✊ ✋ ✌️</div><p>Gana tres rondas para vencer.</p><div class="rowbtn">'+btn("✊ Piedra","rps-rock")+btn("✋ Papel","rps-paper")+btn("✌️ Tijera","rps-scissors")+'</div><p id="rpsScore">0 / 0</p></div>');}
+function rpsPick(p){const opts=["rock","paper","scissors"],cpu=opts[rand(3)];let result=p===cpu?0:((p==="rock"&&cpu==="scissors")||(p==="paper"&&cpu==="rock")||(p==="scissors"&&cpu==="paper"))?1:-1;state.round++;if(result===1)state.score++;$("rpsResult").textContent=`Tú: ${p} · CPU: ${cpu}`;$("rpsScore").textContent=`Victorias: ${state.score} · Ronda ${state.round}/5`;if(state.score>=3){finish("¡Has ganado el duelo!",true,state.score);return;}if(state.round>=5){finish(state.score>=3?"¡Victoria!":"Duelo terminado: "+state.score+" victorias.",state.score>=3,state.score);return;}}
+
+/* 23. Ahorcado */
+const hangWords=["PLANETA","GALAXIA","COMETA","NEBULOSA","COHETE"];
+function hangmanStart(){state.word=hangWords[rand(hangWords.length)];state.guessed=[];state.errors=0;setArena('<div class="center"><div class="big" id="hangWord"></div><p id="hangErrors">Errores: 0/6</p><div class="tiles three" id="hangLetters"></div></div>');hangDraw();}
+function hangDraw(){const el=$("hangWord");if(!el)return;el.textContent=state.word.split("").map(c=>state.guessed.includes(c)?c:"_").join(" ");$("hangErrors").textContent="Errores: "+state.errors+"/6";$("hangLetters").innerHTML="ABCDEFGHIJKLMNÑOPQRSTUVWXYZ".split("").map(c=>btn(c,"letter-"+c,state.guessed.includes(c)?"disabled":"")).join("");}
+function hangmanPick(c){if(state.guessed.includes(c))return;state.guessed.push(c);if(!state.word.includes(c))state.errors++;hangDraw();if(state.word.split("").every(x=>state.guessed.includes(x))){finish("¡Palabra descubierta: "+state.word+"!",true,state.word.length-state.errors);return;}if(state.errors>=6)finish("Se acabaron los intentos. Era "+state.word+".",false);}
+
+/* 24. Adivina el número */
+function guessStart(){state.secret=1+rand(50);state.tries=0;setArena('<div class="center"><p>El número está entre 1 y 50.</p><form><input class="field" id="guessInput" type="number" min="1" max="50" placeholder="Tu número" required><button class="primary">Adivinar</button></form><p id="guessHint"></p></div>');}
+function guessSubmit(){const v=Number($("guessInput").value);if(!Number.isInteger(v)||v<1||v>50){setMessage("Escribe un entero entre 1 y 50.");return;}state.tries++;if(v===state.secret){finish("¡Correcto! Era "+v+". Intentos: "+state.tries,true,Math.max(0,10-state.tries));return;}$("guessHint").textContent=v<state.secret?"El número secreto es mayor.":"El número secreto es menor.";if(state.tries>=7)finish("Sin intentos. El número era "+state.secret+".",false);}
+
+/* 25. Mosaico oculto */
+function patternStart(){state.pattern=shuffle(Array.from({length:16},(_,i)=>i)).slice(0,5);state.selected=[];setArena('<div class="center"><p>Memoriza las cinco casillas iluminadas.</p><div class="tiles" id="patternGrid"></div></div>');patternDraw(true);schedule(()=>{if(ended)return;patternDraw(false);},2000);}
+function patternDraw(show){const el=$("patternGrid");if(!el)return;el.innerHTML=Array.from({length:16},(_,i)=>`<button data-act="pattern-${i}" ${state.selected.includes(i)?"disabled":""} style="background:${(show&&state.pattern.includes(i))||state.selected.includes(i)?"#7c3aed":"#292344"}">${state.selected.includes(i)?"✓":show&&state.pattern.includes(i)?"✦":"·"}</button>`).join("");}
+function patternPick(i){if(state.selected.includes(i))return;if(!state.pattern.includes(i)){finish("Has seleccionado una casilla equivocada.",false,state.selected.length);return;}state.selected.push(i);patternDraw(false);if(state.selected.length===state.pattern.length)finish("¡Patrón recordado!",true,state.selected.length);}
+
+/* 26. Palabra revuelta */
+const scrambleWords=["PLANETA","COHETE","GALAXIA","COMETA","ESTRELLA","ORBITA"];
+function scrambleStart(){state.word=scrambleWords[rand(scrambleWords.length)];state.scramble=shuffle(state.word.split("")).join("");setArena(`<div class="center"><p>Ordena las letras para descubrir la palabra.</p><div class="big">${state.scramble}</div><form><input class="field" id="scrambleInput" placeholder="Tu respuesta" required><button class="primary">Comprobar</button></form></div>`);}
+function scrambleSubmit(){if($("scrambleInput").value.trim().toUpperCase()===state.word)finish("¡Palabra correcta!",true,state.word.length);else finish("No era esa palabra. La respuesta era "+state.word+".",false);}
+
+/* 27. Parada perfecta */
+function precisionStart(){state.running=false;state.value=0;setArena('<div class="center"><div class="big" id="precisionTime">0.00 s</div><p>Intenta parar el cronómetro en 5.00 segundos.</p><button class="bigbtn" data-act="precision-start">INICIAR</button></div>');}
+function precisionStartClock(){if(state.running)return;state.running=true;state.start=performance.now();state.value=0;setActions(btn("⏹ Parar","precision-stop"));interval=setInterval(()=>{if(ended||!state.running)return;state.value=(performance.now()-state.start)/1000;if($("precisionTime"))$("precisionTime").textContent=state.value.toFixed(2)+" s";},20);}
+function precisionStop(){state.running=false;const diff=Math.abs(state.value-5);finish(`Paraste en ${state.value.toFixed(2)} s. Diferencia: ${diff.toFixed(2)} s.`,diff<=.35,Math.max(0,100-Math.round(diff*20)));}
+
+/* 28. Equilibrio digital */
+function balanceStart(){setArena('<div class="center"><p>Deja el indicador entre 45 y 55.</p><div class="big" id="balanceValue">50</div><input id="balanceSlider" class="field" type="range" min="0" max="100" value="50"><button class="primary" data-act="balance-check">Fijar posición</button></div>');}
+function balanceCheck(){const v=Number($("balanceSlider").value);if(v>=45&&v<=55)finish("¡Equilibrio perfecto en "+v+"!",true,100-Math.abs(50-v));else finish("El indicador quedó en "+v+". Prueba otra vez.",false);}
+
+/* 29. Serpiente por pasos */
+function snakeStart(){state.snake=[5,6,7];state.apple=rand(16);while(state.snake.includes(state.apple))state.apple=rand(16);state.score=0;setArena('<div class="center"><p>Muévete por la cuadrícula y recoge cinco energías.</p><div class="tiles" id="snakeGrid"></div><div class="rowbtn">'+btn("⬆️","snake-up")+btn("⬅️","snake-left")+btn("⬇️","snake-down")+btn("➡️","snake-right")+'</div><p id="snakeScore">Energía: 0/5</p></div>');snakeDraw();}
+function snakeDraw(){const el=$("snakeGrid");if(!el)return;el.innerHTML=Array.from({length:16},(_,i)=>`<button disabled style="background:${state.snake.includes(i)?"#2563eb":state.apple===i?"#166534":"#292344"}">${state.snake.includes(i)?"🐍":state.apple===i?"🍎":"·"}</button>`).join("");$("snakeScore").textContent=`Energía: ${state.score}/5`;}
+function snakeMove(d){const head=state.snake[state.snake.length-1];let r=Math.floor(head/4),c=head%4;if(d==="up")r--;if(d==="down")r++;if(d==="left")c--;if(d==="right")c++;if(r<0||r>3||c<0||c>3){finish("La serpiente chocó contra el borde.",false,state.score);return;}const next=r*4+c;if(state.snake.includes(next)){finish("¡Te has chocado con tu cuerpo!",false,state.score);return;}state.snake.push(next);if(next===state.apple){state.score++;if(state.score>=5){finish("¡Has recogido cinco energías!",true,state.score);return;}do{state.apple=rand(16);}while(state.snake.includes(state.apple));}else state.snake.shift();snakeDraw();}
+
+/* 30. Defensa orbital */
+function orbitalStart(){state.round=0;state.hp=3;orbitalNext();}
+function orbitalNext(){state.threat=rand(4);setArena(`<div class="center"><div class="big">🪐</div><p>Sector amenazado: <strong>${["NORTE ⬆️","ESTE ➡️","SUR ⬇️","OESTE ⬅️"][state.threat]}</strong></p><p>Protege el sector correcto durante cinco rondas.</p><div class="tiles">${["⬆️","➡️","⬇️","⬅️"].map((x,i)=>btn(x,"sector-"+i)).join("")}</div><p>Ronda ${state.round+1}/5 · Vidas: ${"❤️".repeat(state.hp)}</p></div>`);}
+function orbitalPick(n){if(n!==state.threat){state.hp--;if(state.hp<=0){finish("El núcleo orbital ha sido destruido.",false,state.round);return;}}state.round++;if(state.round>=5){finish("¡Has protegido la órbita!",true,state.round);return;}orbitalNext();}
 </script>
 </body>
 </html>
